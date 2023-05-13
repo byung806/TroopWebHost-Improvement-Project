@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "TroopWebHost Improvement Extension",
+    "version": "0.1",
+    "author": "CBT Software",
+    "description": "Streamlines the functions of TroopWebHost",
+    "permissions": [
+        "scripting"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://www.troopwebhost.org/*"
+            ],
+            "js": [
+                "content-script.js"
+            ]
+        }
+    ]
+}
