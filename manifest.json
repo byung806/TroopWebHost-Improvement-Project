@@ -3,10 +3,14 @@
     "name": "TroopWebHost Improvement Extension",
     "version": "0.1",
     "author": "CBT Software",
+    "action": {},
     "description": "Streamlines the functions of TroopWebHost",
     "permissions": [
         "scripting",
         "webRequest"
+    ],
+    "host_permissions": [
+        "https://www.troopwebhost.org/*"
     ],
     "content_scripts": [
         {
@@ -19,6 +23,6 @@
         }
     ],
     "background": {
-        "scripts": ["background.js"]
+        "service_worker": "background.js"
     }
 }
