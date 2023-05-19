@@ -14,3 +14,5 @@
 *.vsix
 
 .DS_Store
+.replit
+replit.nix
