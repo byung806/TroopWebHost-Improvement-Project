@@ -5,7 +5,8 @@
     "author": "CBT Software",
     "description": "Streamlines the functions of TroopWebHost",
     "permissions": [
-        "scripting"
+        "scripting",
+        "webRequest"
     ],
     "content_scripts": [
         {
@@ -16,5 +17,8 @@
                 "content-script.js"
             ]
         }
-    ]
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    }
 }
