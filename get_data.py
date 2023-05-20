@@ -29,9 +29,12 @@ def log_in(session: requests.Session):
 
     login_url = 'https://www.troopwebhost.org/formCustom.aspx'
 
-    return session.post(login_url, data=payload, cookies=cookies)
+    p = session.post(login_url, data=payload, cookies=cookies)
+    assert('Log Off' in p.text)
+    return p
 
 
 
 with requests.Session() as session:
     p = log_in(session)
+    
