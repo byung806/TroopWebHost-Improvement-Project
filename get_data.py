@@ -37,4 +37,9 @@ def log_in(session: requests.Session):
 
 with requests.Session() as session:
     p = log_in(session)
-    
+
+    session_cookies = session.cookies.get_dict()
+    aspnet_sessionid = session_cookies['ASP.NET_SessionId']
+    user_login_id = session_cookies['User_Login_ID']
+    session_key = session_cookies['Session_Key']
+
