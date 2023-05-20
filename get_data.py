@@ -29,17 +29,15 @@ def log_in(session: requests.Session):
 
     login_url = 'https://www.troopwebhost.org/formCustom.aspx'
 
-    p = session.post(login_url, data=payload, cookies=cookies)
+    p = session.post(login_url, data=payload)
     assert('Log Off' in p.text)
     return p
 
 
 
 with requests.Session() as session:
+    session.cookies.set('Application_ID', '1338')
     p = log_in(session)
 
-    session_cookies = session.cookies.get_dict()
-    aspnet_sessionid = session_cookies['ASP.NET_SessionId']
-    user_login_id = session_cookies['User_Login_ID']
-    session_key = session_cookies['Session_Key']
+
 
