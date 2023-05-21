@@ -41,6 +41,8 @@ with requests.Session() as session:
     session.cookies.set('Application_ID', '1338')
     log_in(session)
 
+    session.cookies.set('RowsPerPage', 'ALL')
+
     adult_trainings_page = get_html_page(session, ADULT_TRAINING_URL)
     send_email_page = get_html_page(session, SEND_EMAIL_URL)
     
