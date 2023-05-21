@@ -23,21 +23,21 @@ def log_in(session: requests.Session):
         'FirstControl': 'User_Login',
     }
 
-    cookies = {
-        'Application_ID': '1338',
-    }
-
     login_url = 'https://www.troopwebhost.org/formCustom.aspx'
 
     p = session.post(login_url, data=payload)
     assert('Log Off' in p.text)
-    return p
 
+
+def get_adult_trainings_page(session):
+    adult_trainings_url = 'https://www.troopwebhost.org/FormList.aspx?Menu_Item_ID=45888&Stack=0%27,%27'
+
+    response = session.get(adult_trainings_url)
+    return response.text
 
 
 with requests.Session() as session:
     session.cookies.set('Application_ID', '1338')
-    p = log_in(session)
+    log_in(session)
 
-
-
+    adult_trainings = get_adult_trainings_page(session)
