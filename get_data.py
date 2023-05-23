@@ -65,14 +65,14 @@ columns = {
     'Certificate': 7
 }
 
-
-
 soup = BeautifulSoup(adult_trainings_page, 'html.parser').tbody
+
+rows = []
 for entry in soup.findAll('table'):
     row = np.empty(8, dtype=object)
     for tr in entry.findAll('tr', id=True):
         column_td = tr.find('td', class_='mobile-grid-caption')
-        column = columns[column_td.text.strip()]  # could cause error if not in columns, or all_tds is empty
+        column = columns[column_td.text.strip()]  # could cause error if not in columns
 
         data_td = tr.find('td', class_='mobile-grid-data')
         entry_item = data_td.text.strip()
@@ -80,4 +80,6 @@ for entry in soup.findAll('table'):
             entry_item = data_td.a['href']
 
         row[column] = entry_item
-    print(row)
+    rows.append(row)
+
+adult_training_data = np.vstack(rows)
