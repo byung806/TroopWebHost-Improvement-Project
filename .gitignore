@@ -16,5 +16,10 @@
 .DS_Store
 .replit
 replit.nix
+poetry.lock
+pyproject.toml
+.upm
+venv/*
 
 *.txt
+*.html
