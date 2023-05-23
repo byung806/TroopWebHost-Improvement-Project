@@ -1,9 +1,11 @@
 import requests
+from bs4 import BeautifulSoup
+import numpy as np
 
 
 def log_in(session: requests.Session):
     with open('login.txt', 'r') as f:
-        username, password = f.read().split('\n')
+        username, password = f.read().split('\n')[:2]
 
     payload = {
         'menuopenflag': 'N',
@@ -45,4 +47,37 @@ with requests.Session() as session:
 
     adult_trainings_page = get_html_page(session, ADULT_TRAINING_URL)
     send_email_page = get_html_page(session, SEND_EMAIL_URL)
-    
+
+    with open('adult_trainings.html', 'w') as f:
+        f.write(adult_trainings_page)
+    with open('send_email.html', 'w') as f:
+        f.write(send_email_page)
+
+
+columns = {
+    'Adult': 0,
+    'BSA ID': 1,
+    'Leadership': 2,
+    'Training': 3,
+    'Completed': 4,
+    'Comment': 5,
+    'Expires': 6,
+    'Certificate': 7
+}
+
+
+
+soup = BeautifulSoup(adult_trainings_page, 'html.parser').tbody
+for entry in soup.findAll('table'):
+    row = np.empty(8, dtype=object)
+    for tr in entry.findAll('tr', id=True):
+        column_td = tr.find('td', class_='mobile-grid-caption')
+        column = columns[column_td.text.strip()]  # could cause error if not in columns, or all_tds is empty
+
+        data_td = tr.find('td', class_='mobile-grid-data')
+        entry_item = data_td.text.strip()
+        if entry_item == 'Certificate Document':
+            entry_item = data_td.a['href']
+
+        row[column] = entry_item
+    print(row)

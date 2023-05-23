@@ -1,2 +1,4 @@
 tkinter
 requests
+beautifulsoup4
+numpy
