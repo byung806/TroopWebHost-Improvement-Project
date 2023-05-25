@@ -36,50 +36,51 @@ def get_html_page(session, url):
     return response.text
 
 
-ADULT_TRAINING_URL = 'https://www.troopwebhost.org/FormList.aspx?Menu_Item_ID=45888&Stack=0'
-SEND_EMAIL_URL = 'https://www.troopwebhost.org/FormDetail.aspx?Menu_Item_ID=45961&Stack=1'
-
-with requests.Session() as session:
-    session.cookies.set('Application_ID', '1338')
-    log_in(session)
-
-    session.cookies.set('RowsPerPage', 'ALL')
-
-    adult_trainings_page = get_html_page(session, ADULT_TRAINING_URL)
-    send_email_page = get_html_page(session, SEND_EMAIL_URL)
-
-    with open('adult_trainings.html', 'w') as f:
-        f.write(adult_trainings_page)
-    with open('send_email.html', 'w') as f:
-        f.write(send_email_page)
-
-
-columns = {
-    'Adult': 0,
-    'BSA ID': 1,
-    'Leadership': 2,
-    'Training': 3,
-    'Completed': 4,
-    'Comment': 5,
-    'Expires': 6,
-    'Certificate': 7
-}
-
-soup = BeautifulSoup(adult_trainings_page, 'html.parser').tbody
-
-rows = []
-for entry in soup.findAll('table'):
-    row = np.empty(8, dtype=object)
-    for tr in entry.findAll('tr', id=True):
-        column_td = tr.find('td', class_='mobile-grid-caption')
-        column = columns[column_td.text.strip()]  # could cause error if not in columns
-
-        data_td = tr.find('td', class_='mobile-grid-data')
-        entry_item = data_td.text.strip()
-        if entry_item == 'Certificate Document':
-            entry_item = data_td.a['href']
-
-        row[column] = entry_item
-    rows.append(row)
-
-adult_training_data = np.vstack(rows)
+def get_data():
+    ADULT_TRAINING_URL = 'https://www.troopwebhost.org/FormList.aspx?Menu_Item_ID=45888&Stack=0'
+    SEND_EMAIL_URL = 'https://www.troopwebhost.org/FormDetail.aspx?Menu_Item_ID=45961&Stack=1'
+    
+    with requests.Session() as session:
+        session.cookies.set('Application_ID', '1338')
+        log_in(session)
+    
+        session.cookies.set('RowsPerPage', 'ALL')
+    
+        adult_trainings_page = get_html_page(session, ADULT_TRAINING_URL)
+        send_email_page = get_html_page(session, SEND_EMAIL_URL)
+    
+        with open('adult_trainings.html', 'w') as f:
+            f.write(adult_trainings_page)
+        with open('send_email.html', 'w') as f:
+            f.write(send_email_page)
+            
+    columns = {
+        'Adult': 0,
+        'BSA ID': 1,
+        'Leadership': 2,
+        'Training': 3,
+        'Completed': 4,
+        'Comment': 5,
+        'Expires': 6,
+        'Certificate': 7
+    }
+    
+    soup = BeautifulSoup(adult_trainings_page, 'html.parser').tbody
+    
+    rows = []
+    for entry in soup.findAll('table'):
+        row = np.empty(8, dtype=object)
+        for tr in entry.findAll('tr', id=True):
+            column_td = tr.find('td', class_='mobile-grid-caption')
+            column = columns[column_td.text.strip()]  # could cause error if not in columns
+    
+            data_td = tr.find('td', class_='mobile-grid-data')
+            entry_item = data_td.text.strip()
+            if entry_item == 'Certificate Document':
+                entry_item = data_td.a['href']
+    
+            row[column] = entry_item
+        rows.append(row)
+    
+    adult_training_data = np.vstack(rows)
+    
