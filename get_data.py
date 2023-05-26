@@ -3,7 +3,9 @@ from bs4 import BeautifulSoup
 import numpy as np
 
 
+# Log in using a POST request in a session
 def log_in(session: requests.Session):
+    #TODO: get credentials from login
     with open('login.txt', 'r') as f:
         username, password = f.read().split('\n')[:2]
 
@@ -28,32 +30,33 @@ def log_in(session: requests.Session):
     LOGIN_URL = 'https://www.troopwebhost.org/formCustom.aspx'
 
     p = session.post(LOGIN_URL, data=payload)
+    # Make sure login was successful
     assert('Log Off' in p.text)
 
 
+# Use GET request to get HTML at an URL (in a logged in session)
 def get_html_page(session, url):
     response = session.get(url)
     return response.text
 
 
+# Main function to scrape all the data and format it
 def get_data():
     ADULT_TRAINING_URL = 'https://www.troopwebhost.org/FormList.aspx?Menu_Item_ID=45888&Stack=0'
     SEND_EMAIL_URL = 'https://www.troopwebhost.org/FormDetail.aspx?Menu_Item_ID=45961&Stack=1'
     
     with requests.Session() as session:
+        # Application ID of Troop 1094 Darnestown
         session.cookies.set('Application_ID', '1338')
         log_in(session)
-    
+
+        # Cookie to request all data on one page
         session.cookies.set('RowsPerPage', 'ALL')
     
         adult_trainings_page = get_html_page(session, ADULT_TRAINING_URL)
         send_email_page = get_html_page(session, SEND_EMAIL_URL)
-    
-        with open('adult_trainings.html', 'w') as f:
-            f.write(adult_trainings_page)
-        with open('send_email.html', 'w') as f:
-            f.write(send_email_page)
-            
+
+    # Columns of the data with names, for use when parsing
     columns = {
         'Adult': 0,
         'BSA ID': 1,
@@ -64,11 +67,14 @@ def get_data():
         'Expires': 6,
         'Certificate': 7
     }
-    
+
+    # Parse HTML
     soup = BeautifulSoup(adult_trainings_page, 'html.parser').tbody
-    
+
+    # Temporary array to store extracted rows from the HTML
     rows = []
     for entry in soup.findAll('table'):
+        # Loop through each data entry
         row = np.empty(8, dtype=object)
         for tr in entry.findAll('tr', id=True):
             column_td = tr.find('td', class_='mobile-grid-caption')
@@ -81,6 +87,7 @@ def get_data():
     
             row[column] = entry_item
         rows.append(row)
-    
+
+    # Assemble contents of rows array into 2d array with all the data
     adult_training_data = np.vstack(rows)
     
