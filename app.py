@@ -1,4 +1,5 @@
-from tkinter import Label, Tk, Frame, Entry, Button
+from tkinter import Label, Tk, Frame, Canvas, Button, CENTER, font
+from custom_elements import PlaceholderEntry
 
 
 # The main window of the application
@@ -12,6 +13,10 @@ class App(Tk):
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
         self.title('TroopWebHost Improvement Project')
+        self.geometry('340x440')
+        
+        # Focus on every object with mouse click (so entry boxes/textboxes can be deselected)
+        self.bind_all("<1>", lambda event: event.widget.focus_set())
 
         container.grid_rowconfigure(0, weight = 1)
         container.grid_columnconfigure(0, weight = 1)
@@ -37,6 +42,7 @@ class App(Tk):
 class LoginScreen(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
+        self.configure(background='#333333')
 
         # Function to verify login credentials are correct
         def authenticate():
@@ -45,21 +51,23 @@ class LoginScreen(Frame):
             password = password_entry.get()
             controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
 
+        # Frame to keep login centered in the screen
+        center_frame = Frame(self)
+
         # Text and entry boxes for login
-        login_label = Label(self, text='Sign In')
-        username_label = Label(self, text='Username')
-        username_entry = Entry(self)
-        password_label = Label(self, text='Password')
-        password_entry = Entry(self, show='*')
-        login_button = Button(self, text='Login', command=authenticate)
+        login_label = Label(center_frame, text='Sign In', font=('Verdana', 40))
+        username_entry = PlaceholderEntry(center_frame, font=('Verdana', 20), placeholder='Username')
+        password_entry = PlaceholderEntry(center_frame, show='*', font=('Verdana', 20), placeholder='Password')
+        login_button = Button(center_frame, text='Login', command=authenticate, font=('Verdana', 30))
 
         # Positioning each element on the screen
-        login_label.grid(row=0, column=0, columnspan=2, sticky='nsew', pady=40)
-        username_label.grid(row=1, column=0)
-        username_entry.grid(row=1, column=1, pady=20)
-        password_label.grid(row=2, column=0)
-        password_entry.grid(row=2, column=1, pady=20)
-        login_button.grid(row=3, column=0, columnspan=2, pady=30)
+        login_label.grid(row=0, column=0, sticky='nsew', pady=25)
+        username_entry.grid(row=1, column=0, padx=10, pady=15)
+        password_entry.grid(row=2, column=0, padx=10, pady=15)
+        login_button.grid(row=3, column=0, pady=25)
+
+        # Place holding frame in the center of the screen
+        center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
         
 
 # The data visualization screen, shown after login
