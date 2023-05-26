@@ -1,6 +1,6 @@
 # from https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
 
-.vscode/*
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -20,6 +20,7 @@ poetry.lock
 pyproject.toml
 .upm
 venv/*
+__pycache__/
 
 *.txt
 *.html
