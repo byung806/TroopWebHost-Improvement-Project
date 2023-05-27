@@ -36,6 +36,7 @@ class App(Tk):
     def switch_screen_to(self, name):
         screen = self.screens[name]
         screen.tkraise()
+        screen.focus()
 
 
 # The Frame for the login screen
@@ -45,7 +46,7 @@ class LoginScreen(Frame):
         self.configure(background='#333333')
 
         # Function to verify login credentials are correct
-        def authenticate():
+        def authenticate(*_):
             #TODO: add actual verification
             username = username_entry.get()
             password = password_entry.get()
@@ -65,6 +66,8 @@ class LoginScreen(Frame):
         username_entry.grid(row=1, column=0, padx=10, pady=15)
         password_entry.grid(row=2, column=0, padx=10, pady=15)
         login_button.grid(row=3, column=0, pady=25)
+
+        password_entry.bind('<Return>', authenticate)
 
         # Place holding frame in the center of the screen
         center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
