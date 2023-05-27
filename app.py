@@ -26,17 +26,21 @@ class App(Tk):
         self.screens[App.LOGIN_SCREEN] = LoginScreen(container, controller=self)
         self.screens[App.DATA_VISUALIZATION_SCREEN] = DataVisualizationScreen(container, controller=self)
 
-        for screen_name in self.screens:
-            self.screens[screen_name].grid(row=0, column=0, sticky='nsew')
-
         # Open login screen first
+        self.current_screen = App.LOGIN_SCREEN
         self.switch_screen_to(App.LOGIN_SCREEN)
 
     # Switch screens
     def switch_screen_to(self, name):
+        old_screen = self.screens[self.current_screen]
+        old_screen.grid_forget()
+
         screen = self.screens[name]
+        screen.grid(row=0, column=0, sticky='nsew')
         screen.tkraise()
         screen.focus()
+
+        self.current_screen = name
 
 
 # The Frame for the login screen
