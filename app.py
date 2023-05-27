@@ -1,4 +1,4 @@
-from tkinter import Label, Tk, Frame, Canvas, Button, CENTER, font
+from tkinter import Label, Tk, Frame, Button, CENTER
 from custom_elements import PlaceholderEntry
 
 
@@ -65,12 +65,13 @@ class LoginScreen(Frame):
         password_entry = PlaceholderEntry(center_frame, show='*', font=('Verdana', 20), placeholder='Password')
         login_button = Button(center_frame, text='Login', command=authenticate, font=('Verdana', 30))
 
-        # Positioning each element on the screen
+        # Position each element on the screen
         login_label.grid(row=0, column=0, sticky='nsew', pady=25)
         username_entry.grid(row=1, column=0, padx=10, pady=15)
         password_entry.grid(row=2, column=0, padx=10, pady=15)
         login_button.grid(row=3, column=0, pady=25)
 
+        # Make enter key work to press login button
         password_entry.bind('<Return>', authenticate)
 
         # Place holding frame in the center of the screen
