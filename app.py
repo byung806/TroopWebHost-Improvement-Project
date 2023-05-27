@@ -83,8 +83,20 @@ class DataVisualizationScreen(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
 
-        screen_label = Label(self, text='Data Visualization Screen')
-        screen_label.pack()
+        # Configure how much each column will expand with new space
+        self.grid_columnconfigure(0, weight = 4)
+        self.grid_columnconfigure(1, weight = 3)
+        self.grid_columnconfigure(2, weight = 3)
+
+        # 3 main frames for the three sections of the application
+        data_visualizer_frame = Frame(self, bg='red')
+        selected_people_frame = Frame(self)
+        email_template_frame = Frame(self, bg='blue')
+
+        # Place frames on screen (They initially have 0 width but expand if there are components inside)
+        data_visualizer_frame.grid(row=0, column=0, sticky='nsew')
+        selected_people_frame.grid(row=0, column=1, sticky='nsew')
+        email_template_frame.grid(row=0, column=2, sticky='ew')
     
 
 # Start app and start main loop
