@@ -92,21 +92,37 @@ class DataVisualizationScreen(Frame):
         data_visualizer_frame = Frame(self, bg='red')
         selected_people_frame = Frame(self)
         email_template_frame = Frame(self, bg='blue')
-
+      
+        # Inside data visualizer frame
+        sorting_frame = Frame(data_visualizer_frame, bg='purple')
+        chart_frame = Frame(data_visualizer_frame, bg='pink')
+        
         # Place frames on screen (They initially have 0 width but expand if there are components inside)
+        sorting_frame.grid(row=0, column=0, sticky = 'nsew')
+        chart_frame.grid(row=1, column=0, sticky = 'nsew')
         data_visualizer_frame.grid(row=0, column=0, sticky='nsew')
         selected_people_frame.grid(row=0, column=1, sticky='nsew')
         email_template_frame.grid(row=0, column=2, sticky='ew')
 
-      # Text and entry boxes for table
-        name_label = Label(data_visualizer_frame, text='Name', font=('Verdana', 18))
-        training_label = Label(data_visualizer_frame, text='Training Name', font=('Verdana', 18))
-        expiry_date_label = Label(data_visualizer_frame, text='Expiry Date', font=('Expiry Date', 18))
+      # Titles for data table
+        name_label = Label(chart_frame, text='Name', font=('Verdana', 18))
+        training_label = Label(chart_frame, text='Training Name', font=('Verdana', 18))
+        expiry_date_label = Label(chart_frame, text='Expiry Date', font=('Expiry Date', 18))
 
-      # Position each label on the screen
-        name_label.grid(row=0, column=0, sticky='w', padx=7, pady=10)
-        training_label.grid(row=0, column=1, sticky='w', padx=7, pady=10)
-        expiry_date_label.grid(row=0, column=2, sticky='w', padx=7, pady=10)
+      # Sorting buttons
+        sort_by_name_button = Button(sorting_frame, text='Sort by Name', font=('Verdana', 13))
+        sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name', font=('Verdana', 13))
+        sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date', font=('Verdana', 13))
+
+      # Position each title on the screen
+        name_label.grid(row=1, column=0, sticky='w', padx=40, pady=15)
+        training_label.grid(row=1, column=1, sticky='w', padx=40, pady=15)
+        expiry_date_label.grid(row=1, column=2, sticky='w', padx=40, pady=15)
+
+      # Position each button on the screen
+        sort_by_name_button.grid(row=0, column=0, sticky='w', padx=8, pady=15)
+        sort_by_training_name_button.grid(row=0, column=1, sticky='w', padx=8, pady=15)
+        sort_by_expiry_date_button.grid(row=0, column=2, sticky='w', padx=8, pady=15)
   
 # Start app and start main loop
 app = App()
