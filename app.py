@@ -97,8 +97,17 @@ class DataVisualizationScreen(Frame):
         data_visualizer_frame.grid(row=0, column=0, sticky='nsew')
         selected_people_frame.grid(row=0, column=1, sticky='nsew')
         email_template_frame.grid(row=0, column=2, sticky='ew')
-    
 
+      # Text and entry boxes for table
+        name_label = Label(data_visualizer_frame, text='Name', font=('Verdana', 18))
+        training_label = Label(data_visualizer_frame, text='Training Name', font=('Verdana', 18))
+        expiry_date_label = Label(data_visualizer_frame, text='Expiry Date', font=('Expiry Date', 18))
+
+      # Position each label on the screen
+        name_label.grid(row=0, column=0, sticky='w', padx=7, pady=10)
+        training_label.grid(row=0, column=1, sticky='w', padx=7, pady=10)
+        expiry_date_label.grid(row=0, column=2, sticky='w', padx=7, pady=10)
+  
 # Start app and start main loop
 app = App()
 app.mainloop()
