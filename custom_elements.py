@@ -17,6 +17,12 @@ class PlaceholderEntry(Entry):
         self.fill_placeholder()
 
 
+    # Resets entry box (clears text)
+    def reset(self, *_):
+        self.delete(0, END)
+        self.has_content = False
+
+
     # Clears placeholder text in entry, called when user clicks into entry box
     def clear_placeholder(self, *_):
         if not self.has_content:
