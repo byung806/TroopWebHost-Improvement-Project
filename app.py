@@ -92,23 +92,23 @@ class DataVisualizationScreen(Frame):
         
         # COLUMN 1
         # ------ LEFTMOST DATA VISUALIZATION FRAME ------
-        data_visualizer_frame = Frame(self, bg='red')
+        data_visualizer_frame = LabelFrame(self, text='data_visualizer_frame')
 
         # Top sorting frame
-        sorting_frame = Frame(data_visualizer_frame, bg='purple')
-        sort_by_name_button = Button(sorting_frame, text='Sort by Name', font=('Verdana', 13))
-        sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name', font=('Verdana', 13))
-        sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date', font=('Verdana', 13))
+        sorting_frame = LabelFrame(data_visualizer_frame, text='sorting_frame')
+        sort_by_name_button = Button(sorting_frame, text='Sort by Name')
+        sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name')
+        sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date')
 
         sort_by_name_button.grid(row=0, column=0, sticky='w', padx=8, pady=15)
         sort_by_training_name_button.grid(row=0, column=1, sticky='w', padx=8, pady=15)
         sort_by_expiry_date_button.grid(row=0, column=2, sticky='w', padx=8, pady=15)
 
         # Bottom chart frame
-        chart_frame = Frame(data_visualizer_frame, bg='pink')
-        name_label = Label(chart_frame, text='Name', font=('Verdana', 18))
-        training_label = Label(chart_frame, text='Training Name', font=('Verdana', 18))
-        expiry_date_label = Label(chart_frame, text='Expiry Date', font=('Expiry Date', 18))
+        chart_frame = LabelFrame(data_visualizer_frame, text='chart_frame')
+        name_label = Label(chart_frame, text='Name')
+        training_label = Label(chart_frame, text='Training Name')
+        expiry_date_label = Label(chart_frame, text='Expiry Date')
 
         name_label.grid(row=1, column=0, sticky='w', padx=40, pady=15)
         training_label.grid(row=1, column=1, sticky='w', padx=40, pady=15)
@@ -125,19 +125,19 @@ class DataVisualizationScreen(Frame):
 
         # COLUMN 2
         # ------ MIDDLE SELECTED PEOPLE FRAME ------
-        selected_people_frame = Frame(self, bg='green')
+        selected_people_frame = LabelFrame(self, text='selected_people_frame')
 
         # Top to email frame
-        to_email_frame = Frame(selected_people_frame, bg='yellow')
-        to_email_label = Label(to_email_frame, text='To Email', font=('Verdana', 18))
-        email_send_button = Button(to_email_frame, text='Send', font=('Verdana', 13))
+        to_email_frame = LabelFrame(selected_people_frame, text='to_email_frame')
+        to_email_label = Label(to_email_frame, text='To Email')
+        email_send_button = Button(to_email_frame, text='Send')
 
         to_email_label.grid(row=0, column=0, sticky='w', padx=40, pady=15)
         email_send_button.grid(row=1, column=0, sticky='w', padx=60, pady=15)
 
 
         # Bottom selected frame
-        email_list_frame = Frame(selected_people_frame, bg='orange')
+        email_list_frame = LabelFrame(selected_people_frame, text='email_list_frame')
         
         to_email_frame.grid(row=0, column=0, sticky='nsew')
         email_list_frame.grid(row=1, column=0, sticky='nsew')
@@ -149,16 +149,16 @@ class DataVisualizationScreen(Frame):
 
         # COLUMN 3
         # ------ RIGHTMOST EMAIL TEMPLATE FRAME ------
-        email_template_frame = Frame(self, bg='blue')
+        email_template_frame = LabelFrame(self, text='email_template_frame')
 
         # Top selected template frame
-        select_template_frame = Frame(email_template_frame, bg='purple')
-        select_template_label = Label(select_template_frame, text='Select Template', font=('Verdana', 18))
+        select_template_frame = LabelFrame(email_template_frame, text='select_template_frame')
+        select_template_label = Label(select_template_frame, text='Select Template')
         select_template_label.grid(row=0, column=0, sticky='w', padx=40, pady=15)
 
         
         # Bottom template textbox frame
-        template_list_frame = Frame(email_template_frame, bg='pink')
+        template_list_frame = LabelFrame(email_template_frame, text='template_list_frame')
 
         select_template_frame.grid(row=0, column=0, sticky = 'nsew')
         template_list_frame.grid(row=1, column=0, sticky='nsew')
