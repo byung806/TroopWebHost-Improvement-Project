@@ -89,70 +89,80 @@ class DataVisualizationScreen(Frame):
         self.grid_columnconfigure(2, weight = 3)
 
         # 3 main frames for the three sections of the application
-        data_visualizer_frame = Frame(self, bg='red')
-        selected_people_frame = Frame(self, bg='green')
-        email_template_frame = Frame(self, bg='blue')
-      
-        # Inside data visualizer frame
-        sorting_frame = Frame(data_visualizer_frame, bg='purple')
-        chart_frame = Frame(data_visualizer_frame, bg='pink')
-
-        # Inside selected people frame
-        to_email_frame = Frame(selected_people_frame, bg='yellow')
-        email_list_frame = Frame(selected_people_frame, bg='orange')
-
-        # Inside email template frame
-        select_template_frame = Frame(email_template_frame, bg='purple')
-        template_list_frame = Frame(email_template_frame, bg='pink')
         
-        # Place frames on screen (They initially have 0 width but expand if there are components inside)
-        sorting_frame.grid(row=0, column=0, sticky = 'nsew')
-        chart_frame.grid(row=1, column=0, sticky = 'nsew')
-        to_email_frame.grid(row=0, column=0, sticky='nsew')
-        email_list_frame.grid(row=1, column=0, sticky='nsew')
-        select_template_frame.grid(row=0, column=0, sticky='nsew')
-        template_list_frame.grid(row=1, column=0, sticky='nsew')
-        data_visualizer_frame.grid(row=0, column=0, sticky='nsew')
-        selected_people_frame.grid(row=0, column=1, sticky='nsew')
-        email_template_frame.grid(row=0, column=2, sticky='nsew')
+        # COLUMN 1
+        # ------ LEFTMOST DATA VISUALIZATION FRAME ------
+        data_visualizer_frame = Frame(self, bg='red')
 
-      # Titles for data table
-        name_label = Label(chart_frame, text='Name', font=('Verdana', 18))
-        training_label = Label(chart_frame, text='Training Name', font=('Verdana', 18))
-        expiry_date_label = Label(chart_frame, text='Expiry Date', font=('Expiry Date', 18))
-
-      # Sorting buttons
+        # Top sorting frame
+        sorting_frame = Frame(data_visualizer_frame, bg='purple')
         sort_by_name_button = Button(sorting_frame, text='Sort by Name', font=('Verdana', 13))
         sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name', font=('Verdana', 13))
         sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date', font=('Verdana', 13))
 
-      # Position each title on the screen
-        name_label.grid(row=1, column=0, sticky='w', padx=40, pady=15)
-        training_label.grid(row=1, column=1, sticky='w', padx=40, pady=15)
-        expiry_date_label.grid(row=1, column=2, sticky='w', padx=40, pady=15)
-
-      # Position each button on the screen
         sort_by_name_button.grid(row=0, column=0, sticky='w', padx=8, pady=15)
         sort_by_training_name_button.grid(row=0, column=1, sticky='w', padx=8, pady=15)
         sort_by_expiry_date_button.grid(row=0, column=2, sticky='w', padx=8, pady=15)
 
-      # Title for selected people frame
-        to_email_label = Label(to_email_frame, text='To Email', font=('Verdana', 18))
+        # Bottom chart frame
+        chart_frame = Frame(data_visualizer_frame, bg='pink')
+        name_label = Label(chart_frame, text='Name', font=('Verdana', 18))
+        training_label = Label(chart_frame, text='Training Name', font=('Verdana', 18))
+        expiry_date_label = Label(chart_frame, text='Expiry Date', font=('Expiry Date', 18))
 
-      # Email send button
+        name_label.grid(row=1, column=0, sticky='w', padx=40, pady=15)
+        training_label.grid(row=1, column=1, sticky='w', padx=40, pady=15)
+        expiry_date_label.grid(row=1, column=2, sticky='w', padx=40, pady=15)
+
+        # Place frames on screen (They initially have 0 width but expand if there are components inside)
+        sorting_frame.grid(row=0, column=0, sticky = 'nsew')
+        chart_frame.grid(row=1, column=0, sticky = 'nsew')
+        data_visualizer_frame.grid(row=0, column=0, sticky='nsew')
+
+
+
+
+
+        # COLUMN 2
+        # ------ MIDDLE SELECTED PEOPLE FRAME ------
+        selected_people_frame = Frame(self, bg='green')
+
+        # Top to email frame
+        to_email_frame = Frame(selected_people_frame, bg='yellow')
+        to_email_label = Label(to_email_frame, text='To Email', font=('Verdana', 18))
         email_send_button = Button(to_email_frame, text='Send', font=('Verdana', 13))
 
-      # Position each title on the screen
         to_email_label.grid(row=0, column=0, sticky='w', padx=40, pady=15)
-
-      # Position each button on the screen
         email_send_button.grid(row=1, column=0, sticky='w', padx=60, pady=15)
 
-      # Title for email template frame
-        select_template_label = Label(select_template_frame, text='Select Template', font=('Verdana', 18))
 
-      # Position each title on the screen
+        # Bottom selected frame
+        email_list_frame = Frame(selected_people_frame, bg='orange')
+        
+        to_email_frame.grid(row=0, column=0, sticky='nsew')
+        email_list_frame.grid(row=1, column=0, sticky='nsew')
+        selected_people_frame.grid(row=0, column=1, sticky='nsew')
+
+
+
+
+
+        # COLUMN 3
+        # ------ RIGHTMOST EMAIL TEMPLATE FRAME ------
+        email_template_frame = Frame(self, bg='blue')
+
+        # Top selected template frame
+        select_template_frame = Frame(email_template_frame, bg='purple')
+        select_template_label = Label(select_template_frame, text='Select Template', font=('Verdana', 18))
         select_template_label.grid(row=0, column=0, sticky='w', padx=40, pady=15)
+
+        
+        # Bottom template textbox frame
+        template_list_frame = Frame(email_template_frame, bg='pink')
+
+        select_template_frame.grid(row=0, column=0, sticky = 'nsew')
+        template_list_frame.grid(row=1, column=0, sticky='nsew')
+        email_template_frame.grid(row=0, column=2, sticky='nsew')
 
   
 # Start app and start main loop
