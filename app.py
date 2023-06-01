@@ -1,4 +1,5 @@
-from tkinter import Label, Tk, Frame, Button, CENTER
+from tkinter import Tk, CENTER
+from tkinter.ttk import Label, Frame, Button, Style, LabelFrame
 from custom_elements import PlaceholderEntry
 
 
@@ -47,7 +48,6 @@ class App(Tk):
 class LoginScreen(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
-        self.configure(background='#333333')
 
         # Function to verify login credentials are correct
         def authenticate(*_):
@@ -57,19 +57,19 @@ class LoginScreen(Frame):
             controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
 
         # Frame to keep login centered in the screen
-        center_frame = Frame(self)
+        center_frame = LabelFrame(self, text='Sign In', labelanchor='n')
 
         # Text and entry boxes for login
-        login_label = Label(center_frame, text='Sign In', font=('Verdana', 40))
-        username_entry = PlaceholderEntry(center_frame, font=('Verdana', 20), placeholder='Username')
-        password_entry = PlaceholderEntry(center_frame, show='*', font=('Verdana', 20), placeholder='Password')
-        login_button = Button(center_frame, text='Login', command=authenticate, font=('Verdana', 30))
+        #login_label = Label(center_frame, text='Sign In')
+        username_entry = PlaceholderEntry(center_frame, placeholder='Username')
+        password_entry = PlaceholderEntry(center_frame, show='*', placeholder='Password')
+        login_button = Button(center_frame, text='Login', command=authenticate)
 
         # Position each element on the screen
-        login_label.grid(row=0, column=0, sticky='nsew', pady=25)
-        username_entry.grid(row=1, column=0, padx=10, pady=15)
-        password_entry.grid(row=2, column=0, padx=10, pady=15)
-        login_button.grid(row=3, column=0, pady=25)
+        #login_label.grid(row=0, column=0, sticky='nsew', pady=25)
+        username_entry.grid(row=1, column=0, padx=10, pady=10)
+        password_entry.grid(row=2, column=0, padx=10, pady=10)
+        login_button.grid(row=3, column=0, pady=20)
 
         # Make enter key work to press login button
         password_entry.bind('<Return>', authenticate)
@@ -164,7 +164,13 @@ class DataVisualizationScreen(Frame):
         template_list_frame.grid(row=1, column=0, sticky='nsew')
         email_template_frame.grid(row=0, column=2, sticky='nsew')
 
-  
-# Start app and start main loop
-app = App()
-app.mainloop()
+
+if __name__ == '__main__':
+    # Start app and start main loop
+    app = App()
+    app.tk.call('source', 'forest-light.tcl')
+    
+    s = Style()
+    s.theme_use('forest-light')
+
+    app.mainloop()
