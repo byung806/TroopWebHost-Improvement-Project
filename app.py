@@ -1,5 +1,5 @@
-from tkinter import Tk, Text, CENTER, NSEW, RIGHT, END, WORD
-from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Treeview, Scrollbar, Separator
+from tkinter import Tk, Text, CENTER, NSEW, RIGHT, END, WORD, StringVar
+from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Treeview, Scrollbar, Separator, OptionMenu
 from custom_elements import PlaceholderEntry
 
 
@@ -54,7 +54,7 @@ class LoginScreen(Frame):
             #TODO: add actual verification
             username = username_entry.get()
             password = password_entry.get()
-            if True:  # if login failed
+            if False:  # if login failed
                 password_entry.reset()
                 password_entry.focus_set()
                 error_label.grid(row=3, column=0)
@@ -191,8 +191,9 @@ class DataVisualizationScreen(Frame):
 
         # Top selected template frame
         select_template_frame = LabelFrame(email_template_frame, text='select_template_frame')
-        select_template_label = Label(select_template_frame, text='Select Template')
-        select_template_label.grid(row=0, column=0, sticky='w', padx=40, pady=15)
+        options = ['Default']
+        select_template_dropdown = OptionMenu(select_template_frame, StringVar(value=options[0]), *options)
+        select_template_dropdown.grid(row=0, column=0, sticky='w', padx=40, pady=15)
 
         # Bottom template textbox frame
         template_text_frame = LabelFrame(email_template_frame, text='template_list_frame')
