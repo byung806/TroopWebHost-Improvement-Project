@@ -112,29 +112,26 @@ class DataVisualizationScreen(Frame):
         # Bottom chart frame
         chart_frame = LabelFrame(data_visualizer_frame, text='chart_frame')
 
-        treeScroll = Scrollbar(chart_frame)
-        treeScroll.pack(side=RIGHT, fill='y')
-        chart_treeview = Treeview(chart_frame, selectmode='extended', columns=(0,1,2,3), yscrollcommand=treeScroll.set)
+        chart_tree_scroll = Scrollbar(chart_frame)
+        chart_tree_scroll.pack(side=RIGHT, fill='y')
+        chart_treeview = Treeview(chart_frame, selectmode='extended', columns=(0,1,2,3), yscrollcommand=chart_tree_scroll.set)
+        chart_treeview.tag_configure('checked', background='#a0f79c')
         chart_treeview['show'] = 'headings'
         chart_treeview.heading('0', text='Name', anchor='center')
         chart_treeview.heading('1', text='Email', anchor='center')
         chart_treeview.heading('2', text='Training Name', anchor='center')
         chart_treeview.heading('3', text='Expiry Date', anchor='center')
-        treeScroll.config(command=chart_treeview.yview)
-
+        chart_tree_scroll.config(command=chart_treeview.yview)
         contacts = []
         for n in range(1, 100):
             contacts.append((f'first {n} last {n}', f'email{n}@a.com', 'YPT', '6/1/23'))
-
-        for i, contact in enumerate(contacts):
-            chart_treeview.insert('', END, values=contact)
-
-        chart_treeview.column('0', anchor='w', width=120)
-        chart_treeview.column('1', anchor="w", width=120)
-        chart_treeview.column('2', anchor="w", width=120)
-        chart_treeview.column('3', anchor="w", width=120)
+        for contact in contacts:
+            chart_treeview.insert('', END, values=contact, tags=('checked',))
+        chart_treeview.column('0', anchor='w', width=160)
+        chart_treeview.column('1', anchor="w", width=160)
+        chart_treeview.column('2', anchor="w", width=160)
+        chart_treeview.column('3', anchor="w", width=160)
         chart_treeview.pack(expand=True, fill='both')
-
 
         # Place frames on screen (They initially have 0 width but expand if there are components inside)
         sorting_frame.grid(row=0, column=0, sticky = NSEW)
@@ -152,14 +149,27 @@ class DataVisualizationScreen(Frame):
         # Top to email frame
         to_email_frame = LabelFrame(selected_people_frame, text='to_email_frame')
         to_email_label = Label(to_email_frame, text='To Email')
-        email_send_button = Button(to_email_frame, text='Send')
-
         to_email_label.grid(row=0, column=0, sticky='w', padx=40, pady=15)
+        email_send_button = Button(to_email_frame, text='Send')
         email_send_button.grid(row=1, column=0, sticky='w', padx=60, pady=15)
-
 
         # Bottom selected frame
         email_list_frame = LabelFrame(selected_people_frame, text='email_list_frame')
+
+        selected_tree_scroll = Scrollbar(email_list_frame)
+        selected_tree_scroll.pack(side=RIGHT, fill='y')
+        selected_treeview = Treeview(email_list_frame, selectmode='extended', columns=(0,), yscrollcommand=selected_tree_scroll.set)
+        # selected_treeview.tag_configure('checked', background='#a0f79c')
+        selected_treeview['show'] = 'headings'
+        selected_treeview.heading('0', text='Selected', anchor='center')
+        selected_tree_scroll.config(command=selected_treeview.yview)
+        contacts = []
+        for n in range(1, 100):
+            contacts.append((f'email{n}@a.com',))
+        for contact in contacts:
+            selected_treeview.insert('', END, values=contact)
+        selected_treeview.column('0', anchor='w', width=160)
+        selected_treeview.pack(expand=True, fill='both')
         
         to_email_frame.grid(row=0, column=0, sticky='nsew')
         email_list_frame.grid(row=1, column=0, sticky='nsew')
