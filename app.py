@@ -62,7 +62,7 @@ class LoginScreen(Frame):
                 controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
 
         # Frame to keep login centered in the screen
-        center_frame = LabelFrame(self, text='Sign In', labelanchor='n')
+        center_frame = LabelFrame(self, text='Sign In', labelanchor='n', style='A.TLabelframe')
 
         # Text and entry boxes for login
         #login_label = Label(center_frame, text='Sign In')
@@ -115,7 +115,7 @@ class DataVisualizationScreen(Frame):
         chart_tree_scroll = Scrollbar(chart_frame)
         chart_tree_scroll.pack(side=RIGHT, fill='y')
         chart_treeview = Treeview(chart_frame, selectmode='extended', columns=(0,1,2,3), yscrollcommand=chart_tree_scroll.set)
-        chart_treeview.tag_configure('checked', background='#a0f79c')
+        # chart_treeview.tag_configure('checked', background='#a0f79c')
         chart_treeview['show'] = 'headings'
         chart_treeview.heading('0', text='Name', anchor='center')
         chart_treeview.heading('1', text='Email', anchor='center')
@@ -123,8 +123,10 @@ class DataVisualizationScreen(Frame):
         chart_treeview.heading('3', text='Expiry Date', anchor='center')
         chart_tree_scroll.config(command=chart_treeview.yview)
         contacts = []
+        # Making test data
         for n in range(1, 100):
             contacts.append((f'first {n} last {n}', f'email{n}@a.com', 'YPT', '6/1/23'))
+        # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
         for contact in contacts:
             chart_treeview.insert('', END, values=contact, tags=('checked',))
         chart_treeview.column('0', anchor='w', width=120)
@@ -213,5 +215,6 @@ if __name__ == '__main__':
     
     s = Style()
     s.theme_use('forest-light')
+    s.configure('A.TLabelframe', foreground='yellow')
 
     app.mainloop()
