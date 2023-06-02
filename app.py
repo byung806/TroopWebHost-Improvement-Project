@@ -98,7 +98,7 @@ class DataVisualizationScreen(Frame):
         
         # COLUMN 1
         # ------ LEFTMOST DATA VISUALIZATION FRAME ------
-        data_visualizer_frame = Frame(self)
+        data_visualizer_frame = Frame(self, padding=10)
 
         # Top sorting frame
         sorting_frame = Frame(data_visualizer_frame)
@@ -147,7 +147,7 @@ class DataVisualizationScreen(Frame):
 
         # COLUMN 2
         # ------ MIDDLE SELECTED PEOPLE FRAME ------
-        selected_people_frame = Frame(self)
+        selected_people_frame = Frame(self, padding=10)
 
         # Top to email frame
         to_email_frame = Frame(selected_people_frame)
@@ -185,7 +185,7 @@ class DataVisualizationScreen(Frame):
 
         # COLUMN 3
         # ------ RIGHTMOST EMAIL TEMPLATE FRAME ------
-        email_template_frame = Frame(self)
+        email_template_frame = Frame(self, padding=10)
 
         # Top selected template frame
         select_template_frame = Frame(email_template_frame)
@@ -197,7 +197,7 @@ class DataVisualizationScreen(Frame):
         template_text_frame = Frame(email_template_frame)
         selected_tree_scroll = Scrollbar(email_list_frame)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
-        template_text_box = Text(template_text_frame, wrap=WORD)
+        template_text_box = Text(template_text_frame, wrap=WORD, width=50)  # width in characters not pixels
         template_text_box.pack(expand=True, fill='both')
 
 
