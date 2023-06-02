@@ -1,5 +1,5 @@
-from tkinter import Tk, CENTER, NSEW, RIGHT, END
-from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Treeview, Scrollbar
+from tkinter import Tk, Text, CENTER, NSEW, RIGHT, END, WORD
+from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Treeview, Scrollbar, Separator
 from custom_elements import PlaceholderEntry
 
 
@@ -188,13 +188,17 @@ class DataVisualizationScreen(Frame):
         select_template_label = Label(select_template_frame, text='Select Template')
         select_template_label.grid(row=0, column=0, sticky='w', padx=40, pady=15)
 
-        
         # Bottom template textbox frame
-        template_list_frame = LabelFrame(email_template_frame, text='template_list_frame')
+        template_text_frame = LabelFrame(email_template_frame, text='template_list_frame')
+        selected_tree_scroll = Scrollbar(email_list_frame)
+        selected_tree_scroll.pack(side=RIGHT, fill='y')
+        template_text_box = Text(template_text_frame, wrap=WORD)
+        template_text_box.pack(expand=True, fill='both')
+
 
         select_template_frame.grid(row=0, column=0, sticky = 'nsew')
-        template_list_frame.grid(row=1, column=0, sticky='nsew')
-        email_template_frame.grid(row=0, column=2, sticky='nsew')
+        template_text_frame.grid(row=1, column=0, sticky='nsew')
+        email_template_frame.grid(row=0, column=4, sticky='nsew')
 
 
 if __name__ == '__main__':
