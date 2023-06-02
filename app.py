@@ -14,7 +14,7 @@ class App(Tk):
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
         self.title('TroopWebHost Improvement Project')
-        self.geometry('340x440')
+        self.geometry('1280x720')
         
         # Focus on every object with mouse click (so entry boxes/textboxes can be deselected)
         self.bind_all("<1>", lambda event: event.widget.focus_set())
