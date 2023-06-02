@@ -1,5 +1,5 @@
-from tkinter import Tk, CENTER
-from tkinter.ttk import Label, Frame, Button, Style, LabelFrame
+from tkinter import Tk, CENTER, NSEW, RIGHT, END
+from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Treeview, Scrollbar
 from custom_elements import PlaceholderEntry
 
 
@@ -103,27 +103,43 @@ class DataVisualizationScreen(Frame):
         # Top sorting frame
         sorting_frame = LabelFrame(data_visualizer_frame, text='sorting_frame')
         sort_by_name_button = Button(sorting_frame, text='Sort by Name')
+        sort_by_name_button.grid(row=0, column=0, sticky=NSEW, padx=8, pady=15)
         sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name')
+        sort_by_training_name_button.grid(row=0, column=1, sticky=NSEW, padx=8, pady=15)
         sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date')
-
-        sort_by_name_button.grid(row=0, column=0, sticky='w', padx=8, pady=15)
-        sort_by_training_name_button.grid(row=0, column=1, sticky='w', padx=8, pady=15)
-        sort_by_expiry_date_button.grid(row=0, column=2, sticky='w', padx=8, pady=15)
+        sort_by_expiry_date_button.grid(row=0, column=2, sticky=NSEW, padx=8, pady=15)
 
         # Bottom chart frame
         chart_frame = LabelFrame(data_visualizer_frame, text='chart_frame')
-        name_label = Label(chart_frame, text='Name')
-        training_label = Label(chart_frame, text='Training Name')
-        expiry_date_label = Label(chart_frame, text='Expiry Date')
 
-        name_label.grid(row=1, column=0, sticky='w', padx=40, pady=15)
-        training_label.grid(row=1, column=1, sticky='w', padx=40, pady=15)
-        expiry_date_label.grid(row=1, column=2, sticky='w', padx=40, pady=15)
+        treeScroll = Scrollbar(chart_frame)
+        treeScroll.pack(side=RIGHT, fill='y')
+        chart_treeview = Treeview(chart_frame, selectmode='extended', columns=(0,1,2,3), yscrollcommand=treeScroll.set)
+        chart_treeview['show'] = 'headings'
+        chart_treeview.heading('0', text='Name', anchor='center')
+        chart_treeview.heading('1', text='Email', anchor='center')
+        chart_treeview.heading('2', text='Training Name', anchor='center')
+        chart_treeview.heading('3', text='Expiry Date', anchor='center')
+        treeScroll.config(command=chart_treeview.yview)
+
+        contacts = []
+        for n in range(1, 100):
+            contacts.append((f'first {n} last {n}', f'email{n}@a.com', 'YPT', '6/1/23'))
+
+        for i, contact in enumerate(contacts):
+            chart_treeview.insert('', END, values=contact)
+
+        chart_treeview.column('0', anchor='w', width=120)
+        chart_treeview.column('1', anchor="w", width=120)
+        chart_treeview.column('2', anchor="w", width=120)
+        chart_treeview.column('3', anchor="w", width=120)
+        chart_treeview.pack(expand=True, fill='both')
+
 
         # Place frames on screen (They initially have 0 width but expand if there are components inside)
-        sorting_frame.grid(row=0, column=0, sticky = 'nsew')
-        chart_frame.grid(row=1, column=0, sticky = 'nsew')
-        data_visualizer_frame.grid(row=0, column=0, sticky='nsew')
+        sorting_frame.grid(row=0, column=0, sticky = NSEW)
+        chart_frame.grid(row=1, column=0, sticky = NSEW)
+        data_visualizer_frame.grid(row=0, column=0, sticky=NSEW)
 
 
 
