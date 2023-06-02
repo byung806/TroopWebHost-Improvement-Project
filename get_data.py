@@ -68,16 +68,19 @@ def get_data():
         'Certificate': 7
     }
 
-    # Parse HTML
+    # Object to help parse HTML (.tbody finds first <tbody> element)
     soup = BeautifulSoup(adult_trainings_page, 'html.parser').tbody
 
     # Temporary array to store extracted rows from the HTML
     rows = []
+    # soup.findAll finds all <table> tags in the HTML
     for entry in soup.findAll('table'):
         # Loop through each data entry
         row = np.empty(8, dtype=object)
+        # For each <tr> tag 
         for tr in entry.findAll('tr', id=True):
             column_td = tr.find('td', class_='mobile-grid-caption')
+            # Each column of text is stored inside a <td> tag in this particular table in the HTML
             column = columns[column_td.text.strip()]  # could cause error if not in columns
     
             data_td = tr.find('td', class_='mobile-grid-data')
@@ -90,4 +93,9 @@ def get_data():
 
     # Assemble contents of rows array into 2d array with all the data
     adult_training_data = np.vstack(rows)
+
+    # TODO: do the same thing with send_email_page variable using BeautifulSoup
     
+
+if __name__ == '__main__':
+    get_data()
