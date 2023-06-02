@@ -140,6 +140,9 @@ class DataVisualizationScreen(Frame):
 
 
 
+        separator1 = Separator(self)
+        separator1.grid(row=0, column=1, padx=(10, 10), pady=10, sticky="ns")
+
 
 
         # COLUMN 2
@@ -173,9 +176,12 @@ class DataVisualizationScreen(Frame):
         
         to_email_frame.grid(row=0, column=0, sticky='nsew')
         email_list_frame.grid(row=1, column=0, sticky='nsew')
-        selected_people_frame.grid(row=0, column=1, sticky='nsew')
+        selected_people_frame.grid(row=0, column=2, sticky='nsew')
 
 
+
+        separator2 = Separator(self)
+        separator2.grid(row=0, column=3, padx=(10, 10), pady=10, sticky="ns")
 
 
 
