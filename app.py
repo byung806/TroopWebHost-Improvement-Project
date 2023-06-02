@@ -151,10 +151,8 @@ class DataVisualizationScreen(Frame):
 
         # Top to email frame
         to_email_frame = LabelFrame(selected_people_frame, text='to_email_frame')
-        to_email_label = Label(to_email_frame, text='To Email')
-        to_email_label.grid(row=0, column=0, sticky='w', padx=40, pady=15)
-        email_send_button = Button(to_email_frame, text='Send')
-        email_send_button.grid(row=1, column=0, sticky='w', padx=60, pady=15)
+        email_send_button = Button(to_email_frame, text='Send Email')
+        email_send_button.grid(row=1, column=0, sticky='w', pady=15)
 
         # Bottom selected frame
         email_list_frame = LabelFrame(selected_people_frame, text='email_list_frame')
@@ -193,7 +191,7 @@ class DataVisualizationScreen(Frame):
         select_template_frame = LabelFrame(email_template_frame, text='select_template_frame')
         options = ['Default']
         select_template_dropdown = OptionMenu(select_template_frame, StringVar(value=options[0]), *options)
-        select_template_dropdown.grid(row=0, column=0, sticky='w', padx=40, pady=15)
+        select_template_dropdown.grid(row=0, column=0, sticky='w', pady=15)
 
         # Bottom template textbox frame
         template_text_frame = LabelFrame(email_template_frame, text='template_list_frame')
