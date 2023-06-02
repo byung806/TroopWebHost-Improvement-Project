@@ -98,10 +98,10 @@ class DataVisualizationScreen(Frame):
         
         # COLUMN 1
         # ------ LEFTMOST DATA VISUALIZATION FRAME ------
-        data_visualizer_frame = LabelFrame(self, text='data_visualizer_frame')
+        data_visualizer_frame = Frame(self)
 
         # Top sorting frame
-        sorting_frame = LabelFrame(data_visualizer_frame, text='sorting_frame')
+        sorting_frame = Frame(data_visualizer_frame)
         sort_by_name_button = Button(sorting_frame, text='Sort by Name')
         sort_by_name_button.grid(row=0, column=0, sticky=NSEW, padx=8, pady=15)
         sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name')
@@ -110,7 +110,7 @@ class DataVisualizationScreen(Frame):
         sort_by_expiry_date_button.grid(row=0, column=2, sticky=NSEW, padx=8, pady=15)
 
         # Bottom chart frame
-        chart_frame = LabelFrame(data_visualizer_frame, text='chart_frame')
+        chart_frame = Frame(data_visualizer_frame)
 
         chart_tree_scroll = Scrollbar(chart_frame)
         chart_tree_scroll.pack(side=RIGHT, fill='y')
@@ -127,10 +127,10 @@ class DataVisualizationScreen(Frame):
             contacts.append((f'first {n} last {n}', f'email{n}@a.com', 'YPT', '6/1/23'))
         for contact in contacts:
             chart_treeview.insert('', END, values=contact, tags=('checked',))
-        chart_treeview.column('0', anchor='w', width=160)
-        chart_treeview.column('1', anchor="w", width=160)
-        chart_treeview.column('2', anchor="w", width=160)
-        chart_treeview.column('3', anchor="w", width=160)
+        chart_treeview.column('0', anchor='w', width=120)
+        chart_treeview.column('1', anchor="w", width=120)
+        chart_treeview.column('2', anchor="w", width=120)
+        chart_treeview.column('3', anchor="w", width=120)
         chart_treeview.pack(expand=True, fill='both')
 
         # Place frames on screen (They initially have 0 width but expand if there are components inside)
@@ -147,15 +147,15 @@ class DataVisualizationScreen(Frame):
 
         # COLUMN 2
         # ------ MIDDLE SELECTED PEOPLE FRAME ------
-        selected_people_frame = LabelFrame(self, text='selected_people_frame')
+        selected_people_frame = Frame(self)
 
         # Top to email frame
-        to_email_frame = LabelFrame(selected_people_frame, text='to_email_frame')
+        to_email_frame = Frame(selected_people_frame)
         email_send_button = Button(to_email_frame, text='Send Email')
         email_send_button.grid(row=1, column=0, sticky='w', pady=15)
 
         # Bottom selected frame
-        email_list_frame = LabelFrame(selected_people_frame, text='email_list_frame')
+        email_list_frame = Frame(selected_people_frame)
 
         selected_tree_scroll = Scrollbar(email_list_frame)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
@@ -185,16 +185,16 @@ class DataVisualizationScreen(Frame):
 
         # COLUMN 3
         # ------ RIGHTMOST EMAIL TEMPLATE FRAME ------
-        email_template_frame = LabelFrame(self, text='email_template_frame')
+        email_template_frame = Frame(self)
 
         # Top selected template frame
-        select_template_frame = LabelFrame(email_template_frame, text='select_template_frame')
+        select_template_frame = Frame(email_template_frame)
         options = ['Default']
         select_template_dropdown = OptionMenu(select_template_frame, StringVar(value=options[0]), *options)
         select_template_dropdown.grid(row=0, column=0, sticky='w', pady=15)
 
         # Bottom template textbox frame
-        template_text_frame = LabelFrame(email_template_frame, text='template_list_frame')
+        template_text_frame = Frame(email_template_frame)
         selected_tree_scroll = Scrollbar(email_list_frame)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
         template_text_box = Text(template_text_frame, wrap=WORD)
