@@ -10,28 +10,20 @@ def log_in(session: requests.Session):
         username, password = f.read().split('\n')[:2]
 
     payload = {
-        'menuopenflag': 'N',
         'Selected_Action': 'login',
         'Menu_Item_ID': 49792,
         'Form_ID': 7323,
         'Pass': 1,
-        'Stack': 1,
-        'ChildRowID': 0,
-        'Current_URL': 'https://www.troopwebhost.org/formCustom.aspx?Menu_Item_ID=49792&Custom_Form_ID=1',
+        'Current_URL': 'https://www.troopwebhost.org/formCustom.aspx',
         'User_Login': username,
         'User_Password': password,
-        'Language_ID': 1,
-        'Page_Layout': 1,
-        'Report_option': 2,
-        'Custom_Form_ID': 1,
-        'FirstControl': 'User_Login',
     }
 
     LOGIN_URL = 'https://www.troopwebhost.org/formCustom.aspx'
 
     p = session.post(LOGIN_URL, data=payload)
     # Make sure login was successful
-    assert('Log Off' in p.text)
+    return 'Log Off' in p.text
 
 
 # Use GET request to get HTML at an URL (in a logged in session)
@@ -48,7 +40,9 @@ def get_data():
     with requests.Session() as session:
         # Application ID of Troop 1094 Darnestown
         session.cookies.set('Application_ID', '1338')
-        log_in(session)
+        login_successful = log_in(session)
+        if not login_successful:
+            return False
 
         # Cookie to request all data on one page
         session.cookies.set('RowsPerPage', 'ALL')
@@ -93,7 +87,6 @@ def get_data():
 
     # Assemble contents of rows array into 2d array with all the data
     adult_training_data = np.vstack(rows)
-
     # TODO: do the same thing with send_email_page variable using BeautifulSoup
     
 
