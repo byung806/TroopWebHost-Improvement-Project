@@ -17,10 +17,11 @@ class PlaceholderEntry(Entry):
         self.fill_placeholder()
 
 
-    # Resets entry box (clears text)
+    # Resets entry box after a bad password (clears text and sets focus)
     def reset(self, *_):
         self.delete(0, END)
-        self.has_content = False
+        self.has_content = True
+        self.focus_set()
 
 
     # Clears placeholder text in entry, called when user clicks into entry box
