@@ -4,11 +4,7 @@ import numpy as np
 
 
 # Log in using a POST request in a session
-def log_in(session: requests.Session):
-    #TODO: get credentials from login
-    with open('login.txt', 'r') as f:
-        username, password = f.read().split('\n')[:2]
-
+def log_in(session, username, password):
     payload = {
         'Selected_Action': 'login',
         'Menu_Item_ID': 49792,
@@ -32,23 +28,24 @@ def get_html_page(session, url):
     return response.text
 
 
-# Main function to scrape all the data and format it
-def get_data():
-    ADULT_TRAINING_URL = 'https://www.troopwebhost.org/FormList.aspx?Menu_Item_ID=45888&Stack=0'
-    SEND_EMAIL_URL = 'https://www.troopwebhost.org/FormDetail.aspx?Menu_Item_ID=45961&Stack=1'
-    
+def get_logged_in_session(username, password):
     with requests.Session() as session:
         # Application ID of Troop 1094 Darnestown
         session.cookies.set('Application_ID', '1338')
-        login_successful = log_in(session)
-        if not login_successful:
-            return False
+        login_successful = log_in(session, username, password)
+        return session if login_successful else None
+        
 
-        # Cookie to request all data on one page
-        session.cookies.set('RowsPerPage', 'ALL')
+# Main function to scrape all the data and format it
+def get_data(logged_in_session):
+    ADULT_TRAINING_URL = 'https://www.troopwebhost.org/FormList.aspx?Menu_Item_ID=45888&Stack=0'
+    SEND_EMAIL_URL = 'https://www.troopwebhost.org/FormDetail.aspx?Menu_Item_ID=45961&Stack=1'
     
-        adult_trainings_page = get_html_page(session, ADULT_TRAINING_URL)
-        send_email_page = get_html_page(session, SEND_EMAIL_URL)
+    # Cookie to request all data on one page
+    logged_in_session.cookies.set('RowsPerPage', 'ALL')
+
+    adult_trainings_page = get_html_page(logged_in_session, ADULT_TRAINING_URL)
+    send_email_page = get_html_page(logged_in_session, SEND_EMAIL_URL)
 
     # Columns of the data with names, for use when parsing
     columns = {

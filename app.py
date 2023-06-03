@@ -1,6 +1,7 @@
 from tkinter import Tk, Text, CENTER, NSEW, RIGHT, END, WORD, StringVar
 from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Treeview, Scrollbar, Separator, OptionMenu
 from custom_elements import PlaceholderEntry
+from get_data import get_logged_in_session, get_data
 
 
 # The main window of the application
@@ -44,6 +45,10 @@ class App(Tk):
         self.current_screen = name
 
 
+    def get_data(self, session):
+        self.data = get_data(session)
+
+
 # The Frame for the login screen
 class LoginScreen(Frame):
     def __init__(self, parent, controller):
@@ -54,12 +59,14 @@ class LoginScreen(Frame):
             #TODO: add actual verification
             username = username_entry.get()
             password = password_entry.get()
-            if False:  # if login failed
+            session = get_logged_in_session(username, password)
+            if session is None:  # incorrect username/password
                 password_entry.reset()
-                password_entry.focus_set()
                 error_label.grid(row=3, column=0)
             else:
                 controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
+                controller.get_data(session)
+
 
         # Frame to keep login centered in the screen
         center_frame = LabelFrame(self, text='Sign In', labelanchor='n', style='A.TLabelframe')
