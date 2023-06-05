@@ -18,7 +18,7 @@ def log_in(session, username, password):
     LOGIN_URL = 'https://www.troopwebhost.org/formCustom.aspx'
 
     p = session.post(LOGIN_URL, data=payload)
-    # Make sure login was successful
+    # Returns whether or not login was successful
     return 'Log Off' in p.text
 
 
@@ -33,6 +33,7 @@ def get_logged_in_session(username, password):
         # Application ID of Troop 1094 Darnestown
         session.cookies.set('Application_ID', '1338')
         login_successful = log_in(session, username, password)
+        # Returns logged in session or None if login failed
         return session if login_successful else None
         
 
@@ -87,5 +88,6 @@ def get_data(logged_in_session):
     # TODO: do the same thing with send_email_page variable using BeautifulSoup
     
 
+# For testing
 if __name__ == '__main__':
     get_data()
