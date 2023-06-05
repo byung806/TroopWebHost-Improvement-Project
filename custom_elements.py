@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import END
-from tkinter.ttk import Entry
+from tkinter.ttk import Entry, Treeview
 
 
 # Custom class to create entry boxes with a placeholder
@@ -48,3 +48,27 @@ class PlaceholderEntry(Entry):
         if self.has_content:
             return content
         return ''
+
+
+# Custom class to create a sortable chart
+class SortableTreeview(Treeview):
+    def __init__(self, columns=(), master=None, *args, **kwargs):
+        super().__init__(master, columns=columns, *args, **kwargs)
+        # Sort by increasing order on first click
+        for col in columns:
+            self.heading(col, text=col, command=lambda col_copy=col: self.sort_by(col_copy, reverse=False))
+
+
+    # Sort chart by a specific column
+    def sort_by(self, col, reverse=False):
+        # Get and sort specific column, keeping track of which row each item was originally in
+        column = [(iid, self.set(iid, col)) for iid in self.get_children()]
+        column.sort(reverse, key=lambda x: x[1])
+    
+        # Rearrange original rows in the chart based on sort
+        for i, (iid, value) in enumerate(column):
+            self.move(iid, parent=None, index=i)
+
+        # Set sort command to sort other way on next click
+        self.heading(col, text=col, command=lambda col_copy=col: self.sort_by(col_copy, not reverse))
+        
