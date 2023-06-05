@@ -1,8 +1,7 @@
 from tkinter import Tk, Text, CENTER, NSEW, RIGHT, END, WORD, StringVar
-from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Treeview, Scrollbar, Separator, OptionMenu
-from custom_elements import PlaceholderEntry
+from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, Separator, OptionMenu
+from custom_elements import PlaceholderEntry, SortableTreeview
 from get_data import get_logged_in_session, get_data
-
 
 # The main window of the application
 class App(Tk):
@@ -121,7 +120,7 @@ class DataVisualizationScreen(Frame):
 
         chart_tree_scroll = Scrollbar(chart_frame)
         chart_tree_scroll.pack(side=RIGHT, fill='y')
-        chart_treeview = Treeview(chart_frame, selectmode='extended', columns=(0,1,2,3), yscrollcommand=chart_tree_scroll.set)
+        chart_treeview = SortableTreeview(chart_frame, selectmode='extended', columns=(0,1,2,3), yscrollcommand=chart_tree_scroll.set)
         # chart_treeview.tag_configure('checked', background='#a0f79c')
         chart_treeview['show'] = 'headings'
         chart_treeview.heading('0', text='Name', anchor='center')
@@ -168,7 +167,7 @@ class DataVisualizationScreen(Frame):
 
         selected_tree_scroll = Scrollbar(email_list_frame)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
-        selected_treeview = Treeview(email_list_frame, selectmode='extended', columns=(0,), yscrollcommand=selected_tree_scroll.set)
+        selected_treeview = SortableTreeview(email_list_frame, selectmode='extended', columns=(0,), yscrollcommand=selected_tree_scroll.set)
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_treeview['show'] = 'headings'
         selected_treeview.heading('0', text='Selected', anchor='center')
