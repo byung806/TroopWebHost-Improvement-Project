@@ -28,8 +28,8 @@ class App(Tk):
         self.screens[App.DATA_VISUALIZATION_SCREEN] = DataVisualizationScreen(container, controller=self, orient='horizontal')
 
         # Open login screen first
-        self.current_screen = App.LOGIN_SCREEN
-        self.switch_screen_to(App.LOGIN_SCREEN)
+        self.current_screen = App.DATA_VISUALIZATION_SCREEN
+        self.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
 
     # Switch screens
     def switch_screen_to(self, name):
@@ -94,11 +94,9 @@ class LoginScreen(Frame):
 class DataVisualizationScreen(PanedWindow):
     def __init__(self, parent, controller, *args, **kwargs):
         PanedWindow.__init__(self, parent, *args, **kwargs)
-
-        # 3 main frames for the three sections of the application
+        # PanedWindow to hold the three main sections of the application
         
-        # COLUMN 1
-        # ------ LEFTMOST DATA VISUALIZATION FRAME ------
+        # ------ COLUMN 1: LEFTMOST DATA VISUALIZATION FRAME ------
         data_visualizer_frame = PanedWindow(self)
         self.add(data_visualizer_frame, weight=4)
 
@@ -114,15 +112,17 @@ class DataVisualizationScreen(PanedWindow):
 
         # Bottom chart frame
         chart_frame = Frame(data_visualizer_frame)
+        # Scroll bar for all the data
         chart_tree_scroll = Scrollbar(chart_frame)
         chart_tree_scroll.pack(side=RIGHT, fill='y')
         columns = {0:'Name', 1:'Email', 2:'Training Name', 3:'Expiry Date'}
+        # Chart for all the data
         chart_treeview = SortableTreeview(chart_frame, selectmode='extended', columns=columns,
                                           yscrollcommand=chart_tree_scroll.set)
         # chart_treeview.tag_configure('checked', background='#a0f79c')
         chart_tree_scroll.config(command=chart_treeview.yview)
         contacts = []
-        # Making test data
+        # Fake test data (lorem ipsum to fill the chart)
         for n in range(1, 100):
             contacts.append((f'first {n} last {n}', f'email{n}@a.com', 'YPT', '6/1/23'))
         # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
@@ -136,17 +136,19 @@ class DataVisualizationScreen(PanedWindow):
         data_visualizer_frame.add(chart_frame, weight=1)
 
 
-        # COLUMN 2
-        # ------ MIDDLE SELECTED PEOPLE FRAME ------
+        # ------ COLUMN 2: MIDDLE SELECTED EMAILS FRAME ------
         selected_people_frame = Frame(self)
         self.add(selected_people_frame, weight=1)
 
+        # Scroll bar for the selected list
         selected_tree_scroll = Scrollbar(selected_people_frame)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
+        # Chart for the selected people
         selected_treeview = SortableTreeview(selected_people_frame, selectmode='none', columns={0: 'Selected'},
                                              yscrollcommand=selected_tree_scroll.set)
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_tree_scroll.config(command=selected_treeview.yview)
+        # Fake test data (lorem ipsum to fill the chart)
         contacts = []
         for n in range(1, 100):
             contacts.append((f'email{n}@a.com',))
@@ -156,22 +158,24 @@ class DataVisualizationScreen(PanedWindow):
         selected_treeview.pack(expand=True, fill='both')
 
 
-        # COLUMN 3
-        # ------ RIGHTMOST EMAIL TEMPLATE FRAME ------
+        # ------ COLUMN 3: RIGHTMOST EMAIL TEMPLATE FRAME ------
         email_template_frame = Frame(self)
         self.add(email_template_frame, weight=1)
 
         # Top selected template frame
         select_template_frame = Frame(email_template_frame)
         options = ['', 'Default', 'Custom']
+        # Dropdown to choose email templates
         select_template_dropdown = OptionMenu(select_template_frame, StringVar(value=options[1]), *options)
         select_template_dropdown.pack(side=LEFT)
+        # Button to send the email
         email_send_button = Button(select_template_frame, text='Send Email', style='Accent.TButton')
         email_send_button.pack(side=RIGHT)
         select_template_frame.pack(side='top')
 
         # Bottom template textbox frame
         template_text_frame = Frame(email_template_frame)
+        # Textbox to hold the email template
         template_text_box = Text(template_text_frame, wrap=WORD, width=50)  # width in characters not pixels
         template_text_box.pack(expand=True, fill='both')
         template_text_frame.pack(side='top', expand=True, fill='both')
