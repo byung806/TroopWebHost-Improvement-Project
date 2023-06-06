@@ -64,11 +64,11 @@ async def get_data(logged_in_session):
     soup = BeautifulSoup(adult_trainings_page, 'html.parser').tbody
 
     # Temporary array to store extracted rows from the HTML
-    rows = []
+    adult_training_data = []
     # soup.findAll finds all <table> tags in the HTML
     for entry in soup.findAll('table'):
         # Loop through each data entry
-        row = np.empty(8, dtype=object)
+        row = ['' for _ in range(8)]
         # For each <tr> tag 
         for tr in entry.findAll('tr', id=True):
             column_td = tr.find('td', class_='mobile-grid-caption')
@@ -81,11 +81,39 @@ async def get_data(logged_in_session):
                 entry_item = data_td.a['href']
     
             row[column] = entry_item
-        rows.append(row)
+        adult_training_data.append(row)
 
     # Assemble contents of rows array into 2d array with all the data
-    adult_training_data = np.vstack(rows)
-    # TODO: do the same thing with send_email_page variable using BeautifulSoup
+
+
+    # Do the same thing with send_email_page variable using BeautifulSoup
+    columns = {
+        'Name': 0,
+        'Adult': 1,
+        'Patrol': 2,
+        'Leadership': 3,
+        'Rank': 4,
+        'Email': 5,
+        'SMS': 6,
+    }
+
+    email_data = []
+    soup = BeautifulSoup(send_email_page, 'html.parser')
+    tbody = soup.findAll('tbody')[1]
+    for tr in tbody.findAll('tr'):
+        entries_td = tr.findAll('td')[1]
+        labels = entries_td.findAll('span')
+        values = entries_td.findAll('div')
+        pairs = zip(labels, values)
+        row = ['' for _ in range(7)]
+        for (label, value) in pairs:
+            value = value.text.strip()
+            if '<br>' in value:
+                value = value.split('<br>')
+            column = columns[label.text.strip()]
+            row[column] = value
+        email_data.append(row)
+    
     
 
 # For testing
