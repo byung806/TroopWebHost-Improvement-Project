@@ -1,5 +1,5 @@
 from tkinter import Tk, Text, CENTER, NSEW, LEFT, RIGHT, END, WORD, YES, StringVar
-from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, Separator, OptionMenu, PanedWindow
+from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu, PanedWindow
 from custom_elements import PlaceholderEntry, SortableTreeview
 from get_data import get_logged_in_session, get_data
 
@@ -188,6 +188,5 @@ if __name__ == '__main__':
     
     s = Style()
     s.theme_use('forest-light')
-    s.configure('A.TLabelframe', foreground='yellow')
 
     app.mainloop()
