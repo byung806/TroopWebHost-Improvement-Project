@@ -136,11 +136,6 @@ class DataVisualizationScreen(PanedWindow):
         data_visualizer_frame.add(chart_frame, weight=1)
 
 
-        # separator1 = Separator(self)
-        # self.add(separator1, weight=0)
-
-
-
         # COLUMN 2
         # ------ MIDDLE SELECTED PEOPLE FRAME ------
         selected_people_frame = Frame(self)
@@ -159,12 +154,6 @@ class DataVisualizationScreen(PanedWindow):
             selected_treeview.insert('', END, values=contact)
         selected_treeview.column('0', anchor='center', minwidth=100, width=120, stretch=YES)
         selected_treeview.pack(expand=True, fill='both')
-
-
-
-        # separator2 = Separator(self)
-        # self.add(separator2, weight=0)
-
 
 
         # COLUMN 3
