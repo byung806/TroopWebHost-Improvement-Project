@@ -89,28 +89,37 @@ class LoginScreen(Frame):
         center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
         
 
-# The data visualization screen, shown after login
+# The data visualization screen, shown after login, holds the three main columns of the application
 class DataVisualizationScreen(PanedWindow):
     def __init__(self, parent, controller, *args, **kwargs):
         PanedWindow.__init__(self, parent, *args, **kwargs)
-        # PanedWindow to hold the three main sections of the application
         
-        # ------ COLUMN 1: LEFTMOST DATA VISUALIZATION FRAME ------
-        data_visualizer_frame = PanedWindow(self)
-        self.add(data_visualizer_frame, weight=4)
+        data_visualizer_column = DataVisualizerColumn(self)
+        self.add(data_visualizer_column, weight=4)
+        selected_emails_column = SelectedEmailsColumn(self)
+        self.add(selected_emails_column, weight=1)
+        email_template_column = EmailTemplateColumn(self)
+        email_login_column = EmailLoginColumn(self, replacement=email_template_column)
+        self.add(email_login_column, weight=1)
 
+
+# Leftmost data visualization column
+class DataVisualizerColumn(PanedWindow):
+    def __init__(self, parent, *args, **kwargs):
+        PanedWindow.__init__(self, parent, *args, **kwargs)
+        
         # Top sorting frame
-        sorting_frame = Frame(data_visualizer_frame)
+        sorting_frame = Frame(self)
         sort_by_name_button = Button(sorting_frame, text='Sort by Name', command=lambda: chart_treeview.sort_by(0))
         sort_by_name_button.grid(row=0, column=0, sticky=NSEW, padx=8, pady=15)
         sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name', command=lambda: chart_treeview.sort_by(1))
         sort_by_training_name_button.grid(row=0, column=1, sticky=NSEW, padx=8, pady=15)
         sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date', command=lambda: chart_treeview.sort_by(3))
         sort_by_expiry_date_button.grid(row=0, column=2, sticky=NSEW, padx=8, pady=15)
-        data_visualizer_frame.add(sorting_frame, weight=0)
+        self.add(sorting_frame, weight=0)
 
         # Bottom chart frame
-        chart_frame = Frame(data_visualizer_frame)
+        chart_frame = Frame(self)
         # Scroll bar for all the data
         chart_tree_scroll = Scrollbar(chart_frame)
         chart_tree_scroll.pack(side=RIGHT, fill='y')
@@ -132,18 +141,19 @@ class DataVisualizationScreen(PanedWindow):
         chart_treeview.column('2', anchor="w", minwidth=120, width=130, stretch=YES)
         chart_treeview.column('3', anchor="w", minwidth=120, width=130, stretch=YES)
         chart_treeview.pack(expand=True, fill='both')
-        data_visualizer_frame.add(chart_frame, weight=1)
+        self.add(chart_frame, weight=1)
 
 
-        # ------ COLUMN 2: MIDDLE SELECTED EMAILS FRAME ------
-        selected_people_frame = Frame(self)
-        self.add(selected_people_frame, weight=1)
+# Middle selected emails column
+class SelectedEmailsColumn(Frame):
+    def __init__(self, parent, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
 
         # Scroll bar for the selected list
-        selected_tree_scroll = Scrollbar(selected_people_frame)
+        selected_tree_scroll = Scrollbar(self)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
         # Chart for the selected people
-        selected_treeview = SortableTreeview(selected_people_frame, selectmode='none', columns={0: 'Selected'},
+        selected_treeview = SortableTreeview(self, selectmode='none', columns={0: 'Selected'},
                                              yscrollcommand=selected_tree_scroll.set)
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_tree_scroll.config(command=selected_treeview.yview)
@@ -157,15 +167,13 @@ class DataVisualizationScreen(PanedWindow):
         selected_treeview.pack(expand=True, fill='both')
 
 
-        # ------ COLUMN 3: RIGHTMOST EMAIL TEMPLATE FRAME ------
-        email_template_frame = Frame(self)
-        #self.add(email_template_frame, weight=1)
-        # Email login
-        email_frame = EmailLoginScreen(self, replacement=email_template_frame)
-        self.add(email_frame, weight=1)
-
+# Rightmost email template frame
+class EmailTemplateColumn(Frame):
+    def __init__(self, parent, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
+        
         # Top selected template frame
-        select_template_frame = Frame(email_template_frame)
+        select_template_frame = Frame(self)
         options = ['', 'Default', 'Custom']
         # Dropdown to choose email templates
         select_template_dropdown = OptionMenu(select_template_frame, StringVar(value=options[1]), *options)
@@ -176,7 +184,7 @@ class DataVisualizationScreen(PanedWindow):
         select_template_frame.pack(side='top')
 
         # Bottom template textbox frame
-        template_text_frame = Frame(email_template_frame)
+        template_text_frame = Frame(self)
         # Textbox to hold the email template
         template_text_box = Text(template_text_frame, wrap=WORD, width=50)  # width in characters not pixels
         template_text_box.pack(expand=True, fill='both')
@@ -184,7 +192,7 @@ class DataVisualizationScreen(PanedWindow):
 
 
 # The Frame for the email login screen
-class EmailLoginScreen(Frame):
+class EmailLoginColumn(Frame):
     def __init__(self, parent, replacement, *args, **kwargs):
         Frame.__init__(self, parent, *args, **kwargs)
 
@@ -231,3 +239,4 @@ if __name__ == '__main__':
     s.theme_use('forest-light')
 
     app.mainloop()
+
