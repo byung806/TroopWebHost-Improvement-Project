@@ -25,7 +25,7 @@ class App(Tk):
         # A dict of all the screen objects
         self.screens = {}
         self.screens[App.LOGIN_SCREEN] = LoginScreen(container, controller=self)
-        self.screens[App.DATA_VISUALIZATION_SCREEN] = DataVisualizationScreen(container, controller=self)
+        self.screens[App.DATA_VISUALIZATION_SCREEN] = DataVisualizationScreen(container, controller=self, orient='horizontal')
 
         # Open login screen first
         self.current_screen = App.DATA_VISUALIZATION_SCREEN
@@ -91,20 +91,16 @@ class LoginScreen(Frame):
         
 
 # The data visualization screen, shown after login
-class DataVisualizationScreen(Frame):
-    def __init__(self, parent, controller):
-        Frame.__init__(self, parent)
-
-        # Configure how much each column will expand with new space
-        self.grid_columnconfigure(0, weight = 1)
-        self.grid_columnconfigure(1, weight = 1)
-        self.grid_columnconfigure(2, weight = 1)
+class DataVisualizationScreen(PanedWindow):
+    def __init__(self, parent, controller, *args, **kwargs):
+        PanedWindow.__init__(self, parent, *args, **kwargs)
 
         # 3 main frames for the three sections of the application
         
         # COLUMN 1
         # ------ LEFTMOST DATA VISUALIZATION FRAME ------
         data_visualizer_frame = PanedWindow(self)
+        self.add(data_visualizer_frame, weight=4)
 
         # Top sorting frame
         sorting_frame = Frame(data_visualizer_frame)
@@ -124,7 +120,6 @@ class DataVisualizationScreen(Frame):
         chart_treeview = SortableTreeview(chart_frame, selectmode='extended', columns=columns,
                                           yscrollcommand=chart_tree_scroll.set)
         # chart_treeview.tag_configure('checked', background='#a0f79c')
-        chart_treeview['show'] = 'headings'
         chart_tree_scroll.config(command=chart_treeview.yview)
         contacts = []
         # Making test data
@@ -140,20 +135,16 @@ class DataVisualizationScreen(Frame):
         chart_treeview.pack(expand=True, fill='both')
         data_visualizer_frame.add(chart_frame, weight=1)
 
-        # Place frames on screen (They initially have 0 width but expand if there are components inside)
-        data_visualizer_frame.grid(row=0, column=0, padx=(20, 10), pady=20, sticky=NSEW)
 
-
-
-        separator1 = Separator(self)
-        separator1.grid(row=0, column=1, padx=(10, 10), pady=10, sticky="nsw")
+        # separator1 = Separator(self)
+        # self.add(separator1, weight=0)
 
 
 
         # COLUMN 2
         # ------ MIDDLE SELECTED PEOPLE FRAME ------
-        selected_people_frame = Frame(self, padding=10)
-
+        selected_people_frame = Frame(self)
+        self.add(selected_people_frame, weight=1)
 
         selected_tree_scroll = Scrollbar(selected_people_frame)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
@@ -166,22 +157,20 @@ class DataVisualizationScreen(Frame):
             contacts.append((f'email{n}@a.com',))
         for contact in contacts:
             selected_treeview.insert('', END, values=contact)
-        selected_treeview.column('0', anchor='w', width=100, stretch='no')
-        selected_treeview.pack(expand=True, fill='y')
-        
-        selected_people_frame.grid(row=0, column=2, sticky='nsew')
+        selected_treeview.column('0', anchor='w', minwidth=100, stretch=YES)
+        selected_treeview.pack(side=LEFT, fill='y')
 
 
 
-        separator2 = Separator(self)
-        separator2.grid(row=0, column=3, padx=(10, 10), pady=10, sticky="nsw")
+        # separator2 = Separator(self)
+        # self.add(separator2, weight=0)
 
 
 
         # COLUMN 3
         # ------ RIGHTMOST EMAIL TEMPLATE FRAME ------
-        email_template_frame = PanedWindow(self)
-        email_template_frame.grid(row=0, column=4, sticky=NSEW)
+        email_template_frame = Frame(self)
+        self.add(email_template_frame, weight=1)
 
         # Top selected template frame
         select_template_frame = Frame(email_template_frame)
@@ -190,15 +179,13 @@ class DataVisualizationScreen(Frame):
         select_template_dropdown.pack(side=LEFT)
         email_send_button = Button(select_template_frame, text='Send Email', style='Accent.TButton')
         email_send_button.pack(side=RIGHT)
-        email_template_frame.add(select_template_frame, weight=0)
+        select_template_frame.pack(side='top')
 
         # Bottom template textbox frame
         template_text_frame = Frame(email_template_frame)
-        selected_tree_scroll = Scrollbar(email_template_frame)
-        selected_tree_scroll.pack(side=RIGHT, fill='y')
         template_text_box = Text(template_text_frame, wrap=WORD, width=50)  # width in characters not pixels
         template_text_box.pack(expand=True, fill='both')
-        email_template_frame.add(template_text_frame, weight=1)
+        template_text_frame.pack(side='top', expand=True, fill='both')
 
 
 if __name__ == '__main__':
