@@ -28,8 +28,8 @@ class App(Tk):
         self.screens[App.DATA_VISUALIZATION_SCREEN] = DataVisualizationScreen(container, controller=self, orient='horizontal')
 
         # Open login screen first
-        self.current_screen = App.DATA_VISUALIZATION_SCREEN
-        self.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
+        self.current_screen = App.LOGIN_SCREEN
+        self.switch_screen_to(App.LOGIN_SCREEN)
 
     # Switch screens
     def switch_screen_to(self, name):
