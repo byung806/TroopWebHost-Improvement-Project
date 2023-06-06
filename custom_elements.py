@@ -52,9 +52,10 @@ class PlaceholderEntry(Entry):
 
 # Custom class to create a sortable chart
 class SortableTreeview(Treeview):
-    def __init__(self, master=None, columns={}, *args, **kwargs):
+    def __init__(self, master=None, columns={}, show='headings', *args, **kwargs):
         super().__init__(master, columns=columns.keys(), *args, **kwargs)
         self.col_names = columns
+        self['show'] = show
         # Sort by increasing order on first click
         for col in columns:
             self.heading(col, text=self.col_names[col], command=lambda col_copy=col: self.sort_by(col_copy, reverse=False), anchor='center')
