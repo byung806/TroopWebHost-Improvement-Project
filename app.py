@@ -55,7 +55,6 @@ class LoginScreen(Frame):
 
         # Function to verify login credentials are correct
         def authenticate(*_):
-            #TODO: add actual verification
             username = username_entry.get()
             password = password_entry.get()
             session = get_logged_in_session(username, password)
@@ -160,7 +159,10 @@ class DataVisualizationScreen(PanedWindow):
 
         # ------ COLUMN 3: RIGHTMOST EMAIL TEMPLATE FRAME ------
         email_template_frame = Frame(self)
-        self.add(email_template_frame, weight=1)
+        #self.add(email_template_frame, weight=1)
+        # Email login
+        email_frame = EmailLoginScreen(self, replacement=email_template_frame)
+        self.add(email_frame, weight=1)
 
         # Top selected template frame
         select_template_frame = Frame(email_template_frame)
@@ -179,6 +181,45 @@ class DataVisualizationScreen(PanedWindow):
         template_text_box = Text(template_text_frame, wrap=WORD, width=50)  # width in characters not pixels
         template_text_box.pack(expand=True, fill='both')
         template_text_frame.pack(side='top', expand=True, fill='both')
+
+
+# The Frame for the email login screen
+class EmailLoginScreen(Frame):
+    def __init__(self, parent, replacement, *args, **kwargs):
+        Frame.__init__(self, parent, *args, **kwargs)
+
+        # Function to verify email login credentials are correct
+        def authenticate(*_):
+            username = username_entry.get()
+            password = password_entry.get()
+            if False: #login_failed:
+                error_label.grid(row=3, column=0)
+            else:
+                parent.forget(self)
+                parent.add(replacement, weight=1)
+            
+
+        # Frame to keep login centered in the screen
+        center_frame = LabelFrame(self, text='Sign in to your email', labelanchor='n')
+
+        # Text and entry boxes for login
+        #login_label = Label(center_frame, text='Sign In')
+        username_entry = PlaceholderEntry(center_frame, placeholder='Username')
+        password_entry = PlaceholderEntry(center_frame, show='*', placeholder='Password')
+        error_label = Label(center_frame, text='Incorrect username or password.', style='TLabel')
+        login_button = Button(center_frame, text='Login', command=authenticate)
+
+        # Position each element on the screen
+        #login_label.grid(row=0, column=0, sticky='nsew', pady=25)
+        username_entry.grid(row=1, column=0, padx=10, pady=10)
+        password_entry.grid(row=2, column=0, padx=10, pady=10)
+        login_button.grid(row=4, column=0, pady=10)
+
+        # Make enter key work to press login button
+        password_entry.bind('<Return>', authenticate)
+
+        # Place holding frame in the center of the screen
+        center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
 
 
 if __name__ == '__main__':
