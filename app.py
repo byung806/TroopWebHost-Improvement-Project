@@ -1,3 +1,5 @@
+import asyncio, tracemalloc
+
 from tkinter import Tk, Text, CENTER, NSEW, LEFT, RIGHT, END, WORD, YES, StringVar
 from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu, PanedWindow
 from custom_elements import PlaceholderEntry, SortableTreeview
@@ -9,12 +11,13 @@ class App(Tk):
     DATA_VISUALIZATION_SCREEN = 1
 
     # THe constructor to initialize the window
-    def __init__(self, *args, **kwargs):
+    def __init__(self, loop, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
         self.title('TroopWebHost Improvement Project')
         self.geometry('1280x720')
+        self.protocol("WM_DELETE_WINDOW", self.close)
         
         # Focus on every object with mouse click (so entry boxes/textboxes can be deselected)
         self.bind_all("<1>", lambda event: event.widget.focus_set())
@@ -28,8 +31,20 @@ class App(Tk):
         self.screens[App.DATA_VISUALIZATION_SCREEN] = DataVisualizationScreen(container, controller=self, orient='horizontal')
 
         # Open login screen first
-        self.current_screen = App.DATA_VISUALIZATION_SCREEN
-        self.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
+        self.current_screen = App.LOGIN_SCREEN
+        self.switch_screen_to(App.LOGIN_SCREEN)
+
+        self.running_tasks = []
+        self.loop = loop
+        self.updater(0.01)
+        # self.running_tasks.append(self.loop.create_task(self.updater(interval=1/120)))
+
+    def updater(self, interval):
+        self.update()
+        self.loop.call_later(interval, self.updater, interval)
+
+    def create_task(self, task):
+        self.running_tasks.append(self.loop.create_task(task))
 
     # Switch screens
     def switch_screen_to(self, name):
@@ -44,8 +59,15 @@ class App(Tk):
         self.current_screen = name
 
 
-    def get_data(self, session):
-        self.data = get_data(session)
+    async def get_data(self, session):
+        self.data = await get_data(session)
+        print(self.data)
+
+
+    def close(self):
+        for task in self.running_tasks:
+            task.cancel()
+        self.loop.stop()
 
 
 # The Frame for the login screen
@@ -54,16 +76,17 @@ class LoginScreen(Frame):
         Frame.__init__(self, parent)
 
         # Function to verify login credentials are correct
-        def authenticate(*_):
+        async def authenticate(*_):
             username = username_entry.get()
             password = password_entry.get()
-            session = get_logged_in_session(username, password)
+            session = await get_logged_in_session(username, password)
+
             if session is None:  # incorrect username/password
                 password_entry.reset()
                 error_label.grid(row=3, column=0)
             else:
                 controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
-                controller.get_data(session)
+                controller.loop.create_task(controller.get_data(session))
 
 
         # Frame to keep login centered in the screen
@@ -74,7 +97,7 @@ class LoginScreen(Frame):
         username_entry = PlaceholderEntry(center_frame, placeholder='Username')
         password_entry = PlaceholderEntry(center_frame, show='*', placeholder='Password')
         error_label = Label(center_frame, text='Incorrect username or password.', style='TLabel')
-        login_button = Button(center_frame, text='Login', command=authenticate)
+        login_button = Button(center_frame, text='Login', command=lambda: controller.loop.create_task(authenticate()))
 
         # Position each element on the screen
         #login_label.grid(row=0, column=0, sticky='nsew', pady=25)
@@ -197,7 +220,7 @@ class EmailLoginColumn(Frame):
         Frame.__init__(self, parent, *args, **kwargs)
 
         # Function to verify email login credentials are correct
-        def authenticate(*_):
+        async def authenticate(*_):
             username = username_entry.get()
             password = password_entry.get()
             if False: #login_failed:
@@ -215,7 +238,7 @@ class EmailLoginColumn(Frame):
         username_entry = PlaceholderEntry(center_frame, placeholder='Username')
         password_entry = PlaceholderEntry(center_frame, show='*', placeholder='Password')
         error_label = Label(center_frame, text='Incorrect username or password.', style='TLabel')
-        login_button = Button(center_frame, text='Login', command=authenticate)
+        login_button = Button(center_frame, text='Login', command=lambda: asyncio.run(authenticate()))
 
         # Position each element on the screen
         #login_label.grid(row=0, column=0, sticky='nsew', pady=25)
@@ -231,12 +254,22 @@ class EmailLoginColumn(Frame):
 
 
 if __name__ == '__main__':
+    # Enable tracemalloc to get object allocation traceback
+    tracemalloc.start()
+
     # Start app and start main loop
-    app = App()
+    loop = asyncio.get_event_loop()
+
+    app = App(loop)
     app.tk.call('source', 'forest-light.tcl')
-    
+
     s = Style()
     s.theme_use('forest-light')
 
-    app.mainloop()
+    loop.run_forever()
+    app.close()
+    loop.close()
+
+
+    # app.mainloop()
 
