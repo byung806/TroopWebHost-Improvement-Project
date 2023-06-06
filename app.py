@@ -128,10 +128,10 @@ class DataVisualizationScreen(PanedWindow):
         # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
         for contact in contacts:
             chart_treeview.insert('', END, values=contact, tags=('checked',))
-        chart_treeview.column('0', anchor='w', minwidth=120, stretch=YES)
-        chart_treeview.column('1', anchor="w", minwidth=120, stretch=YES)
-        chart_treeview.column('2', anchor="w", minwidth=120, stretch=YES)
-        chart_treeview.column('3', anchor="w", minwidth=120, stretch=YES)
+        chart_treeview.column('0', anchor='w', minwidth=120, width=130, stretch=YES)
+        chart_treeview.column('1', anchor="w", minwidth=120, width=130, stretch=YES)
+        chart_treeview.column('2', anchor="w", minwidth=120, width=130, stretch=YES)
+        chart_treeview.column('3', anchor="w", minwidth=120, width=130, stretch=YES)
         chart_treeview.pack(expand=True, fill='both')
         data_visualizer_frame.add(chart_frame, weight=1)
 
@@ -148,7 +148,7 @@ class DataVisualizationScreen(PanedWindow):
 
         selected_tree_scroll = Scrollbar(selected_people_frame)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
-        selected_treeview = SortableTreeview(selected_people_frame, selectmode='none', columns={0: 'Selected'}, show='tree',
+        selected_treeview = SortableTreeview(selected_people_frame, selectmode='none', columns={0: 'Selected'},
                                              yscrollcommand=selected_tree_scroll.set)
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_tree_scroll.config(command=selected_treeview.yview)
@@ -157,8 +157,8 @@ class DataVisualizationScreen(PanedWindow):
             contacts.append((f'email{n}@a.com',))
         for contact in contacts:
             selected_treeview.insert('', END, values=contact)
-        selected_treeview.column('0', anchor='w', minwidth=100, stretch=YES)
-        selected_treeview.pack(side=LEFT, fill='y')
+        selected_treeview.column('0', anchor='center', minwidth=100, width=120, stretch=YES)
+        selected_treeview.pack(expand=True, fill='both')
 
 
 
