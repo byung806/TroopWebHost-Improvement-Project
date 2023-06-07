@@ -1,5 +1,5 @@
-from tkinter import Tk, Text, CENTER, NSEW, LEFT, RIGHT, END, WORD, YES, StringVar
-from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu, PanedWindow
+from tkinter import Tk, Text, CENTER, NSEW, LEFT, RIGHT, END, WORD, YES, VERTICAL, StringVar, PanedWindow
+from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu
 from custom_elements import PlaceholderEntry, SortableTreeview, CheckableSortableTreeview
 from get_data import get_logged_in_session, get_data
 
@@ -39,8 +39,8 @@ class App(Tk):
             container, controller=self, orient='horizontal')
 
         # Open login screen first
-        self.current_screen = App.LOGIN_SCREEN
-        self.switch_screen_to(App.LOGIN_SCREEN)
+        self.current_screen = App.DATA_VISUALIZATION_SCREEN
+        self.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
 
     # Switch screens
     def switch_screen_to(self, name):
@@ -112,13 +112,13 @@ class DataVisualizationScreen(PanedWindow):
         self.selected = []
 
         self.data_visualizer_column = DataVisualizerColumn(self)
-        self.add(self.data_visualizer_column, weight=4)
+        self.add(self.data_visualizer_column, minsize=480)
         self.selected_emails_column = SelectedEmailsColumn(self)
-        self.add(self.selected_emails_column, weight=1)
+        self.add(self.selected_emails_column, minsize=120)
         self.email_template_column = EmailTemplateColumn(self)
         self.email_login_column = EmailLoginColumn(
             self, replacement=self.email_template_column)
-        self.add(self.email_login_column, weight=1)
+        self.add(self.email_login_column, minsize=400)
 
         # self.update_selected()
         # self.data_visualizer_column.chart_treeview.bind("<Button-2>", lambda _: self.update_selected())
@@ -150,33 +150,20 @@ class DataVisualizationScreen(PanedWindow):
 # Leftmost data visualization column
 class DataVisualizerColumn(PanedWindow):
     def __init__(self, parent, *args, **kwargs):
-        PanedWindow.__init__(self, parent, *args, **kwargs)
+        PanedWindow.__init__(self, parent, orient=VERTICAL, *args, **kwargs)
 
         # Top sorting frame
         sorting_frame = Frame(self)
-        sort_by_name_button = Button(
-            sorting_frame, text='Sort by Name', command=lambda: self.chart_treeview.sort_by(0))
-        sort_by_name_button.grid(row=0, column=0, sticky=NSEW, padx=8, pady=15)
-        sort_by_training_name_button = Button(
-            sorting_frame, text='Sort by Training Name', command=lambda: self.chart_treeview.sort_by(1))
-        sort_by_training_name_button.grid(
-            row=0, column=1, sticky=NSEW, padx=8, pady=15)
-        sort_by_expiry_date_button = Button(
-            sorting_frame, text='Sort by Expiry Date', command=lambda: self.chart_treeview.sort_by(3))
-        sort_by_expiry_date_button.grid(
-            row=0, column=2, sticky=NSEW, padx=8, pady=15)
         add_selected_button = Button(sorting_frame, text='Add Selected',
                                      command=lambda: parent.add_selected(), style='Accent.TButton')
-        add_selected_button.grid(row=0, column=3, sticky=NSEW, padx=8, pady=15)
+        add_selected_button.pack(padx=8, pady=15, side='left')
         remove_selected_button = Button(sorting_frame, text='Remove Selected',
                                         command=lambda: parent.remove_selected(), style='Accent.TButton')
-        remove_selected_button.grid(
-            row=0, column=4, sticky=NSEW, padx=8, pady=15)
+        remove_selected_button.pack(padx=8, pady=15, side='left')
         deselect_all_button = Button(sorting_frame, text='Remove All',
-                                        command=lambda: parent.remove_all_selected(), style='TButton')
-        deselect_all_button.grid(
-            row=0, column=5, sticky=NSEW, padx=8, pady=15)
-        self.add(sorting_frame, weight=0)
+                                     command=lambda: parent.remove_all_selected(), style='TButton')
+        deselect_all_button.pack(padx=8, pady=15, side='right')
+        self.add(sorting_frame)
 
         # Bottom chart frame
         chart_frame = Frame(self)
@@ -198,7 +185,7 @@ class DataVisualizerColumn(PanedWindow):
         self.chart_treeview.column(
             '3', anchor="w", minwidth=120, width=130, stretch=YES)
         self.chart_treeview.pack(expand=True, fill='both')
-        self.add(chart_frame, weight=1)
+        self.add(chart_frame)
 
     # Update chart once self.data is updated
     def update_chart(self, data):
