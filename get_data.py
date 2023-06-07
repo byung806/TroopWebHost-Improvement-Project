@@ -103,14 +103,26 @@ def get_data(logged_in_session):
         labels = entries_td.findAll('span')
         values = entries_td.findAll('div')
         pairs = zip(labels, values)
-        row = ['' for _ in range(7)]
+        row = ['' for _ in range(6)]
+        row.append(list())
         for (label, value) in pairs:
-            value = value.text.strip()
-            if '<br>' in value:
-                value = value.split('<br>')
-            column = columns[label.text.strip()]
+            label = label.text.strip()
+            if label == 'Email':
+                # Workaround since .text ignores <br> (line break) tags
+                possible_emails = str(value).split('>')[1:]
+                if '@' in possible_emails[1]:
+                    value = [possible_emails[0][:-4].strip(), possible_emails[1][:-5].strip()]
+                else:
+                    value = [possible_emails[0][:-5].strip()]
+            else:
+                value = value.text.strip()
+            column = columns[label]
             row[column] = value
         email_data.append(row)
+
+    # Combine two sets of data
+    for person in email_data:
+        pass
     
 
 # For testing
