@@ -11,7 +11,7 @@ class App(Tk):
     DATA_VISUALIZATION_SCREEN = 1
 
     # THe constructor to initialize the window
-    def __init__(self, *args, **kwargs):
+    def __init__(self, default_width, default_height, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
@@ -20,10 +20,11 @@ class App(Tk):
         # Center app when opened
         screen_width = self.winfo_screenwidth()  # Width of the screen
         screen_height = self.winfo_screenheight()
-        x = (screen_width/2) - (1280/2)
-        y = (screen_height/2) - (720/2)
+        x = (screen_width/2) - (default_width/2)
+        y = (screen_height/2) - (default_height/2)
 
         self.geometry('1280x720+%d+%d' % (x, y))
+        self.minsize(1050, 600)
 
         # Focus on every object with mouse click (so entry boxes/textboxes can be deselected)
         self.bind_all("<1>", lambda event: event.widget.focus_set())
@@ -111,14 +112,16 @@ class DataVisualizationScreen(PanedWindow):
         self.data = []
         self.selected = []
 
+        min_sizes = [500, 130, 400]
+
         self.data_visualizer_column = DataVisualizerColumn(self)
-        self.add(self.data_visualizer_column, minsize=500)
+        self.add(self.data_visualizer_column, minsize=min_sizes[0])
         self.selected_emails_column = SelectedEmailsColumn(self)
-        self.add(self.selected_emails_column, minsize=130)
+        self.add(self.selected_emails_column, minsize=min_sizes[1])
         self.email_template_column = EmailTemplateColumn(self)
         self.email_login_column = EmailLoginColumn(
             self, replacement=self.email_template_column)
-        self.add(self.email_login_column, minsize=400)
+        self.add(self.email_login_column, minsize=min_sizes[2])
 
         # self.update_selected()
         # self.data_visualizer_column.chart_treeview.bind("<Button-2>", lambda _: self.update_selected())
@@ -292,7 +295,7 @@ class EmailLoginColumn(Frame):
 
 if __name__ == '__main__':
     # Start app and start main loop
-    app = App()
+    app = App(1280, 720)
     app.tk.call('source', 'forest-light.tcl')
 
     s = Style()
