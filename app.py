@@ -118,11 +118,11 @@ class DataVisualizerColumn(PanedWindow):
         
         # Top sorting frame
         sorting_frame = Frame(self)
-        sort_by_name_button = Button(sorting_frame, text='Sort by Name', command=lambda: chart_treeview.sort_by(0))
+        sort_by_name_button = Button(sorting_frame, text='Sort by Name', command=lambda: self.chart_treeview.sort_by(0))
         sort_by_name_button.grid(row=0, column=0, sticky=NSEW, padx=8, pady=15)
-        sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name', command=lambda: chart_treeview.sort_by(1))
+        sort_by_training_name_button = Button(sorting_frame, text='Sort by Training Name', command=lambda: self.chart_treeview.sort_by(1))
         sort_by_training_name_button.grid(row=0, column=1, sticky=NSEW, padx=8, pady=15)
-        sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date', command=lambda: chart_treeview.sort_by(3))
+        sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date', command=lambda: self.chart_treeview.sort_by(3))
         sort_by_expiry_date_button.grid(row=0, column=2, sticky=NSEW, padx=8, pady=15)
         self.add(sorting_frame, weight=0)
 
