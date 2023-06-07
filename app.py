@@ -241,7 +241,7 @@ class EmailTemplateColumn(Frame):
         email_send_button = Button(
             select_template_frame, text='Send Email', style='Accent.TButton')
         email_send_button.pack(side=RIGHT)
-        select_template_frame.pack(side='top')
+        select_template_frame.pack(side='top', fill='x')
 
         # Bottom template textbox frame
         template_text_frame = Frame(self)
@@ -265,7 +265,7 @@ class EmailLoginColumn(Frame):
                 error_label.grid(row=3, column=0)
             else:
                 parent.forget(self)
-                parent.add(replacement, weight=1)
+                parent.add(replacement, minsize=400)
 
         # Frame to keep login centered in the screen
         center_frame = LabelFrame(
