@@ -16,7 +16,14 @@ class App(Tk):
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
         self.title('TroopWebHost Improvement Project')
-        self.geometry('1280x720')
+
+        # Center app when opened
+        screen_width = self.winfo_screenwidth()  # Width of the screen
+        screen_height = self.winfo_screenheight()
+        x = (screen_width/2) - (1280/2)
+        y = (screen_height/2) - (720/2)
+
+        self.geometry('1280x720+%d+%d' % (x, y))
 
         # Focus on every object with mouse click (so entry boxes/textboxes can be deselected)
         self.bind_all("<1>", lambda event: event.widget.focus_set())
@@ -190,13 +197,6 @@ class DataVisualizerColumn(PanedWindow):
             self.chart_treeview.insert(
                 '', END, values=row, tags=('unchecked',))
 
-    # Get selected items
-    def get_selected(self):
-        return self.chart_treeview.get_selected_items()
-
-    def get_selected_email(self):
-        return self.chart_treeview.get_selected_items_email()
-
 
 # Middle selected emails column
 class SelectedEmailsColumn(Frame):
@@ -211,19 +211,12 @@ class SelectedEmailsColumn(Frame):
                                                   yscrollcommand=selected_tree_scroll.set)
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_tree_scroll.config(command=self.selected_treeview.yview)
-        # Fake test data (lorem ipsum to fill the chart)
-        contacts = []
-        for n in range(1, 100):
-            contacts.append((f'email{n}@a.com',))
-        for contact in contacts:
-            self.selected_treeview.insert('', END, values=contact)
         self.selected_treeview.column(
             '0', anchor='center', minwidth=100, width=120, stretch=YES)
         self.selected_treeview.pack(expand=True, fill='both')
 
     # Update selected chart after select or deselect
     def update_selected(self, data):
-        print('update_selected_middle_column', data)
         for item in self.selected_treeview.get_children():
             self.selected_treeview.delete(item)
         # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
