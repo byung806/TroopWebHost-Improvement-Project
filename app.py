@@ -1,6 +1,6 @@
 from tkinter import Tk, Text, CENTER, NSEW, LEFT, RIGHT, END, WORD, YES, StringVar
 from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu, PanedWindow
-from custom_elements import PlaceholderEntry, SortableTreeview
+from custom_elements import PlaceholderEntry, SortableTreeview, CheckableSortableTreeview
 from get_data import get_logged_in_session, get_data
 
 # The main window of the application
@@ -96,6 +96,7 @@ class DataVisualizationScreen(PanedWindow):
         self.controller = controller
         # Set data to empty until it can be filled with updated data
         self.data = []
+        self.selected = []
         
         self.data_visualizer_column = DataVisualizerColumn(self)
         self.add(self.data_visualizer_column, weight=4)
@@ -105,10 +106,32 @@ class DataVisualizationScreen(PanedWindow):
         self.email_login_column = EmailLoginColumn(self, replacement=self.email_template_column)
         self.add(self.email_login_column, weight=1)
 
+        # self.update_selected()
+        # self.data_visualizer_column.chart_treeview.bind("<Button-2>", lambda _: self.update_selected())
+
     # Request and parse data from TroopWebHost
     def get_data(self, session):
         self.data = get_data(session)
         self.data_visualizer_column.update_chart(self.data)
+
+
+    def add_selected(self):
+        self.data_visualizer_column.chart_treeview.add_selected()
+        self.selected = self.data_visualizer_column.chart_treeview.get_selected_items_email()
+        self.selected_emails_column.update_selected(self.selected)
+        self.data_visualizer_column.chart_treeview.color_selected()
+
+    def remove_selected(self):
+        self.data_visualizer_column.chart_treeview.remove_selected()
+        self.selected = self.data_visualizer_column.chart_treeview.get_selected_items_email()
+        self.selected_emails_column.update_selected(self.selected)
+        self.data_visualizer_column.chart_treeview.color_selected()
+
+    # def update_selected(self):
+    #     self.selected = self.data_visualizer_column.get_selected()
+    #     self.selected_emails_column.update_selected(self.selected)
+    #     self.data_visualizer_column.chart_treeview.color_selected()
+
 
 
 # Leftmost data visualization column
@@ -124,6 +147,10 @@ class DataVisualizerColumn(PanedWindow):
         sort_by_training_name_button.grid(row=0, column=1, sticky=NSEW, padx=8, pady=15)
         sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date', command=lambda: self.chart_treeview.sort_by(3))
         sort_by_expiry_date_button.grid(row=0, column=2, sticky=NSEW, padx=8, pady=15)
+        add_selected_button = Button(sorting_frame, text='Add Selected', command=lambda: parent.add_selected())
+        add_selected_button.grid(row=0, column=3, sticky=NSEW, padx=8, pady=15)
+        remove_selected_button = Button(sorting_frame, text='Remove Selected', command=lambda: parent.remove_selected())
+        remove_selected_button.grid(row=0, column=4, sticky=NSEW, padx=8, pady=15)
         self.add(sorting_frame, weight=0)
 
         # Bottom chart frame
@@ -131,11 +158,10 @@ class DataVisualizerColumn(PanedWindow):
         # Scroll bar for all the data
         chart_tree_scroll = Scrollbar(chart_frame)
         chart_tree_scroll.pack(side=RIGHT, fill='y')
-        columns = {0:'Name', 1:'Email', 2:'Training Name', 3:'Expiry Date'}
+        columns = {0:'Name', 1:'Training Name', 2:'Expiry Date', 3:'Email'}
         # Chart for all the data
-        self.chart_treeview = SortableTreeview(chart_frame, selectmode='extended', columns=columns,
+        self.chart_treeview = CheckableSortableTreeview(chart_frame, selectmode='extended', columns=columns,
                                           yscrollcommand=chart_tree_scroll.set)
-        # chart_treeview.tag_configure('checked', background='#a0f79c')
         chart_tree_scroll.config(command=self.chart_treeview.yview)
         self.update_chart(parent.data)
         self.chart_treeview.column('0', anchor='w', minwidth=120, width=130, stretch=YES)
@@ -149,7 +175,14 @@ class DataVisualizerColumn(PanedWindow):
     def update_chart(self, data):
         # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
         for row in data:
-            self.chart_treeview.insert('', END, values=row, tags=('checked',))
+            self.chart_treeview.insert('', END, values=row, tags=('unchecked',))
+
+    # Get selected items
+    def get_selected(self):
+        return self.chart_treeview.get_selected_items()
+    
+    def get_selected_email(self):
+        return self.chart_treeview.get_selected_items_email()
 
 
 # Middle selected emails column
@@ -161,18 +194,27 @@ class SelectedEmailsColumn(Frame):
         selected_tree_scroll = Scrollbar(self)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
         # Chart for the selected people
-        selected_treeview = SortableTreeview(self, selectmode='none', columns={0: 'Selected'},
+        self.selected_treeview = SortableTreeview(self, selectmode='none', columns={0: 'Selected'},
                                              yscrollcommand=selected_tree_scroll.set)
         # selected_treeview.tag_configure('checked', background='#a0f79c')
-        selected_tree_scroll.config(command=selected_treeview.yview)
+        selected_tree_scroll.config(command=self.selected_treeview.yview)
         # Fake test data (lorem ipsum to fill the chart)
         contacts = []
         for n in range(1, 100):
             contacts.append((f'email{n}@a.com',))
         for contact in contacts:
-            selected_treeview.insert('', END, values=contact)
-        selected_treeview.column('0', anchor='center', minwidth=100, width=120, stretch=YES)
-        selected_treeview.pack(expand=True, fill='both')
+            self.selected_treeview.insert('', END, values=contact)
+        self.selected_treeview.column('0', anchor='center', minwidth=100, width=120, stretch=YES)
+        self.selected_treeview.pack(expand=True, fill='both')
+
+    # Update selected chart after select or deselect
+    def update_selected(self, data):
+        print('update_selected_middle_column', data)
+        for item in self.selected_treeview.get_children():
+            self.selected_treeview.delete(item)
+        # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
+        for row in data:
+            self.selected_treeview.insert('', END, values=row, tags=('unchecked',))
 
 
 # Rightmost email template frame
