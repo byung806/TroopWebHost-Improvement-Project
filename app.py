@@ -112,9 +112,9 @@ class DataVisualizationScreen(PanedWindow):
         self.selected = []
 
         self.data_visualizer_column = DataVisualizerColumn(self)
-        self.add(self.data_visualizer_column, minsize=480)
+        self.add(self.data_visualizer_column, minsize=500)
         self.selected_emails_column = SelectedEmailsColumn(self)
-        self.add(self.selected_emails_column, minsize=120)
+        self.add(self.selected_emails_column, minsize=130)
         self.email_template_column = EmailTemplateColumn(self)
         self.email_login_column = EmailLoginColumn(
             self, replacement=self.email_template_column)
@@ -177,13 +177,13 @@ class DataVisualizerColumn(PanedWindow):
         chart_tree_scroll.config(command=self.chart_treeview.yview)
         self.update_chart(parent.data)
         self.chart_treeview.column(
-            '0', anchor='w', minwidth=120, width=130, stretch=YES)
+            '0', anchor='w', minwidth=120, width=160, stretch=YES)
         self.chart_treeview.column(
-            '1', anchor="w", minwidth=120, width=130, stretch=YES)
+            '1', anchor="w", minwidth=120, width=160, stretch=YES)
         self.chart_treeview.column(
-            '2', anchor="w", minwidth=120, width=130, stretch=YES)
+            '2', anchor="w", minwidth=120, width=160, stretch=YES)
         self.chart_treeview.column(
-            '3', anchor="w", minwidth=120, width=130, stretch=YES)
+            '3', anchor="w", minwidth=120, width=160, stretch=YES)
         self.chart_treeview.pack(expand=True, fill='both')
         self.add(chart_frame)
 
@@ -209,7 +209,7 @@ class SelectedEmailsColumn(Frame):
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_tree_scroll.config(command=self.selected_treeview.yview)
         self.selected_treeview.column(
-            '0', anchor='center', minwidth=100, width=120, stretch=YES)
+            '0', anchor='center', minwidth=100, width=120)
         self.selected_treeview.pack(expand=True, fill='both')
 
     # Update selected chart after select or deselect
