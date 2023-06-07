@@ -42,7 +42,6 @@ def get_data(logged_in_session):
     ADULT_TRAINING_URL = 'https://www.troopwebhost.org/FormList.aspx?Menu_Item_ID=45888&Stack=0'
     SEND_EMAIL_URL = 'https://www.troopwebhost.org/FormDetail.aspx?Menu_Item_ID=45961&Stack=1'
 
-    print(logged_in_session)
     adult_trainings_page = get_html_page(logged_in_session, ADULT_TRAINING_URL)
     send_email_page = get_html_page(logged_in_session, SEND_EMAIL_URL)
 
