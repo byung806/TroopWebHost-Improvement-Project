@@ -140,6 +140,12 @@ class DataVisualizationScreen(PanedWindow):
         self.selected_emails_column.update_selected(self.selected)
         self.data_visualizer_column.chart_treeview.color_selected()
 
+    def remove_all_selected(self):
+        self.data_visualizer_column.chart_treeview.remove_selected(all=True)
+        self.selected.clear()
+        self.selected_emails_column.update_selected(self.selected)
+        self.data_visualizer_column.chart_treeview.color_selected()
+
 
 # Leftmost data visualization column
 class DataVisualizerColumn(PanedWindow):
@@ -166,6 +172,10 @@ class DataVisualizerColumn(PanedWindow):
                                         command=lambda: parent.remove_selected(), style='Accent.TButton')
         remove_selected_button.grid(
             row=0, column=4, sticky=NSEW, padx=8, pady=15)
+        deselect_all_button = Button(sorting_frame, text='Remove All',
+                                        command=lambda: parent.remove_all_selected(), style='TButton')
+        deselect_all_button.grid(
+            row=0, column=5, sticky=NSEW, padx=8, pady=15)
         self.add(sorting_frame, weight=0)
 
         # Bottom chart frame

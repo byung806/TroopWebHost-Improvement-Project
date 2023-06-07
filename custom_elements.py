@@ -105,20 +105,17 @@ class CheckableSortableTreeview(SortableTreeview):
             email = self.item(item)['values'][3]
             emails.append(email)
         return list(set(emails))
-    
 
     def add_selected(self):
         selected_items = self.selection()
         for item in selected_items:
             self.selected.add(item)
-    
 
-    def remove_selected(self):
-        selected_items = self.selection()
+    def remove_selected(self, all=False):
+        selected_items = self.get_children() if all else self.selection()
         for item in selected_items:
             if item in self.selected:
                 self.selected.remove(item)
-
 
     # Highlight selected items in chart
     def color_selected(self):
