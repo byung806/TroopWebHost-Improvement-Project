@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import END, PhotoImage
 from tkinter.ttk import Entry, Treeview
+import datetime
 
 
 # Custom class to create entry boxes with a placeholder
@@ -65,7 +66,10 @@ class SortableTreeview(Treeview):
     def sort_by(self, col, reverse=False):
         # Get and sort specific column, keeping track of which row each item was originally in
         column = [(iid, self.set(iid, col)) for iid in self.get_children()]
-        column.sort(reverse=reverse, key=lambda x: x[1])
+        if self.col_names[col] == 'Expiry Date':
+            column.sort(reverse=reverse, key=lambda x: datetime.datetime.strptime('12/22/2222', r'%m/%d/%Y') if x[1] == '' else datetime.datetime.strptime(x[1], r'%m/%d/%Y'))
+        else:
+            column.sort(reverse=reverse, key=lambda x: x[1])
     
         # Rearrange original rows in the chart based on sort
         for i, (iid, value) in enumerate(column):

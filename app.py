@@ -57,13 +57,13 @@ class LoginScreen(Frame):
         def authenticate(*_):
             username = username_entry.get()
             password = password_entry.get()
-            session = get_logged_in_session(username, password)
+            # session = get_logged_in_session(username, password)
             if session is None:  # incorrect username/password
                 password_entry.reset()
                 error_label.grid(row=3, column=0)
             else:
                 controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
-                controller.get_data(session)
+                # controller.get_data(session)
 
 
         # Frame to keep login centered in the screen
@@ -193,18 +193,11 @@ class SelectedEmailsColumn(Frame):
                                              yscrollcommand=selected_tree_scroll.set)
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_tree_scroll.config(command=self.selected_treeview.yview)
-        # Fake test data (lorem ipsum to fill the chart)
-        contacts = []
-        for n in range(1, 100):
-            contacts.append((f'email{n}@a.com',))
-        for contact in contacts:
-            self.selected_treeview.insert('', END, values=contact)
         self.selected_treeview.column('0', anchor='center', minwidth=100, width=120, stretch=YES)
         self.selected_treeview.pack(expand=True, fill='both')
 
     # Update selected chart after select or deselect
     def update_selected(self, data):
-        print('update_selected_middle_column', data)
         for item in self.selected_treeview.get_children():
             self.selected_treeview.delete(item)
         # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
@@ -279,6 +272,11 @@ if __name__ == '__main__':
     # Start app and start main loop
     app = App()
     app.tk.call('source', 'forest-light.tcl')
+
+    with open('login.txt', 'r') as f:
+        user, password = f.read().split('\n')[:2]
+        session = get_logged_in_session(user, password)
+        app.get_data(session)
     
     s = Style()
     s.theme_use('forest-light')

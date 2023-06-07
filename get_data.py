@@ -127,5 +127,5 @@ def get_data(logged_in_session):
 
     # Combine two sets of data into columns:
     # Name, Training, Expiry Date, Email
-    adult_training_data = [[p[0], p[3], p[6], *email_data[p[0]]] for p in adult_training_data]
+    adult_training_data = [[p[0], p[3], p[6], *email_data[p[0]]] for p in adult_training_data if len(email_data[p[0]]) == 1]
     return adult_training_data    
