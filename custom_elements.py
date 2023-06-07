@@ -79,13 +79,10 @@ class SortableTreeview(Treeview):
 class CheckableSortableTreeview(SortableTreeview):
     def __init__(self, master=None, *args, **kwargs):
         super().__init__(master, *args, **kwargs)
-        self.checked_img = PhotoImage(file='checked.png')
-        self.unchecked_img = PhotoImage(file='unchecked.png')
         self.selected = set()
 
-        self.tag_configure('checked', background='#a0f79c', image=self.checked_img)
-        self.tag_configure('unchecked', background='#eeeeee', image=self.unchecked_img)
-        # self.bind("<Button-1>", self.box_click, True)
+        self.tag_configure('checked', background='#a0f79c')
+        self.tag_configure('unchecked', background='#eeeeee')
 
     # Uncheck row with item
     def check_row(self, item):
@@ -94,19 +91,6 @@ class CheckableSortableTreeview(SortableTreeview):
     # Check row with item
     def uncheck_row(self, item):
         self.item(item, tags=("unchecked",))
-
-    # Function called when user clicks on treeview
-    def box_click(self, event):
-        x, y, widget = event.x, event.y, event.widget
-        # element_clicked = widget.identify('element', x, y)
-        # if 'image' in element_clicked:
-        #     # a box was clicked
-        item = self.identify_row(y)
-        tags = self.item(item, 'tags')
-        if 'unchecked' in tags:
-            self.check_row(item)
-        else:
-            self.uncheck_row(item)
 
     def get_selected_items(self):
         self.update()
