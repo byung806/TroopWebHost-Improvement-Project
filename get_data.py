@@ -81,9 +81,6 @@ def get_data(logged_in_session):
             row[column] = entry_item
         adult_training_data.append(row)
 
-    # Assemble contents of rows array into 2d array with all the data
-
-
     # Do the same thing with send_email_page variable using BeautifulSoup
     columns = {
         'Name': 0,
@@ -95,16 +92,20 @@ def get_data(logged_in_session):
         'SMS': 6,
     }
 
+    # Dictionary to represent  name: email  pairs
     email_data = {}
     soup = BeautifulSoup(send_email_page, 'html.parser')
     tbody = soup.findAll('tbody')[1]
+    # Loop through each person
     for tr in tbody.findAll('tr'):
         entries_td = tr.findAll('td')[1]
         labels = entries_td.findAll('span')
         values = entries_td.findAll('div')
+        # Combine labels and values into tuples
         pairs = zip(labels, values)
         row = ['' for _ in range(6)]
         row.append(list())
+        # Loop through each entry for each person
         for (label, value) in pairs:
             label = label.text.strip()
             if label == 'Email':
@@ -117,8 +118,9 @@ def get_data(logged_in_session):
             else:
                 value = value.text.strip()
             column = columns[label]
+            # Set each column in data list
             row[column] = value
-        # If person is an adult
+        # Only include in data if person is an adult
         if row[1] == 'Y':
             email_data[row[0]] = row[5]
 
@@ -126,8 +128,3 @@ def get_data(logged_in_session):
     # Name, Training, Expiry Date, Email
     adult_training_data = [[p[0], p[3], p[6], *email_data[p[0]]] for p in adult_training_data]
     return adult_training_data    
-
-
-# For testing
-if __name__ == '__main__':
-    get_data()
