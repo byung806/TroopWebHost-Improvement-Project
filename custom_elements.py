@@ -66,7 +66,7 @@ class SortableTreeview(Treeview):
     def sort_by(self, col, reverse=False):
         # Get and sort specific column, keeping track of which row each item was originally in
         column = [(iid, self.set(iid, col)) for iid in self.get_children()]
-        def normal_key(x): return x[1]
+        def normal_key(x): return x[1].lower()
         if reverse:
             # Sort by date (latest to earliest), setting people without a date to a date far in the past so they show up at the bottom
             def dates_key(d): return datetime.strptime(
