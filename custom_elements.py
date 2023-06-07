@@ -63,7 +63,6 @@ class SortableTreeview(Treeview):
                 col_copy, reverse=False), anchor='center')
 
     # Sort chart by a specific column
-
     def sort_by(self, col, reverse=False):
         # Get and sort specific column, keeping track of which row each item was originally in
         column = [(iid, self.set(iid, col)) for iid in self.get_children()]
@@ -107,11 +106,12 @@ class CheckableSortableTreeview(SortableTreeview):
     def uncheck_row(self, item):
         self.item(item, tags=("unchecked",))
 
+    # Get currently selected items in the chart (as item objects)
     def get_selected_items(self):
         self.update()
         return self.selection()
 
-    # Get currently selected items (emails) in the chart
+    # Get currently selected items in the chart (as email strings)
     def get_selected_items_email(self):
         selected_items = self.selected
         emails = []
@@ -121,11 +121,13 @@ class CheckableSortableTreeview(SortableTreeview):
             emails.append(email)
         return list(set(emails))
 
+    # Add selected items in the chart
     def add_selected(self):
         selected_items = self.selection()
         for item in selected_items:
             self.selected.add(item)
 
+    # Remove selected items from the chart
     def remove_selected(self, all=False):
         selected_items = self.get_children() if all else self.selection()
         for item in selected_items:
