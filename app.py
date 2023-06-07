@@ -127,11 +127,6 @@ class DataVisualizationScreen(PanedWindow):
         self.selected_emails_column.update_selected(self.selected)
         self.data_visualizer_column.chart_treeview.color_selected()
 
-    # def update_selected(self):
-    #     self.selected = self.data_visualizer_column.get_selected()
-    #     self.selected_emails_column.update_selected(self.selected)
-    #     self.data_visualizer_column.chart_treeview.color_selected()
-
 
 
 # Leftmost data visualization column
@@ -147,9 +142,9 @@ class DataVisualizerColumn(PanedWindow):
         sort_by_training_name_button.grid(row=0, column=1, sticky=NSEW, padx=8, pady=15)
         sort_by_expiry_date_button = Button(sorting_frame, text='Sort by Expiry Date', command=lambda: self.chart_treeview.sort_by(3))
         sort_by_expiry_date_button.grid(row=0, column=2, sticky=NSEW, padx=8, pady=15)
-        add_selected_button = Button(sorting_frame, text='Add Selected', command=lambda: parent.add_selected())
+        add_selected_button = Button(sorting_frame, text='Add Selected', command=lambda: parent.add_selected(), style='Accent.TButton')
         add_selected_button.grid(row=0, column=3, sticky=NSEW, padx=8, pady=15)
-        remove_selected_button = Button(sorting_frame, text='Remove Selected', command=lambda: parent.remove_selected())
+        remove_selected_button = Button(sorting_frame, text='Remove Selected', command=lambda: parent.remove_selected(), style='Accent.TButton')
         remove_selected_button.grid(row=0, column=4, sticky=NSEW, padx=8, pady=15)
         self.add(sorting_frame, weight=0)
 
