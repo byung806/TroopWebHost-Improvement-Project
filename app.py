@@ -28,8 +28,8 @@ class App(Tk):
         self.screens[App.DATA_VISUALIZATION_SCREEN] = DataVisualizationScreen(container, controller=self, orient='horizontal')
 
         # Open login screen first
-        self.current_screen = App.DATA_VISUALIZATION_SCREEN
-        self.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
+        self.current_screen = App.LOGIN_SCREEN
+        self.switch_screen_to(App.LOGIN_SCREEN)
 
     # Switch screens
     def switch_screen_to(self, name):
@@ -43,9 +43,9 @@ class App(Tk):
 
         self.current_screen = name
 
-
+    # Request and parse data from TroopWebHost
     def get_data(self, session):
-        self.data = get_data(session)
+        self.screens[App.DATA_VISUALIZATION_SCREEN].get_data(session)
 
 
 # The Frame for the login screen
@@ -93,14 +93,22 @@ class LoginScreen(Frame):
 class DataVisualizationScreen(PanedWindow):
     def __init__(self, parent, controller, *args, **kwargs):
         PanedWindow.__init__(self, parent, *args, **kwargs)
+        self.controller = controller
+        # Set data to empty until it can be filled with updated data
+        self.data = []
         
-        data_visualizer_column = DataVisualizerColumn(self)
-        self.add(data_visualizer_column, weight=4)
-        selected_emails_column = SelectedEmailsColumn(self)
-        self.add(selected_emails_column, weight=1)
-        email_template_column = EmailTemplateColumn(self)
-        email_login_column = EmailLoginColumn(self, replacement=email_template_column)
-        self.add(email_login_column, weight=1)
+        self.data_visualizer_column = DataVisualizerColumn(self)
+        self.add(self.data_visualizer_column, weight=4)
+        self.selected_emails_column = SelectedEmailsColumn(self)
+        self.add(self.selected_emails_column, weight=1)
+        self.email_template_column = EmailTemplateColumn(self)
+        self.email_login_column = EmailLoginColumn(self, replacement=self.email_template_column)
+        self.add(self.email_login_column, weight=1)
+
+    # Request and parse data from TroopWebHost
+    def get_data(self, session):
+        self.data = get_data(session)
+        self.data_visualizer_column.update_chart(self.data)
 
 
 # Leftmost data visualization column
@@ -125,23 +133,23 @@ class DataVisualizerColumn(PanedWindow):
         chart_tree_scroll.pack(side=RIGHT, fill='y')
         columns = {0:'Name', 1:'Email', 2:'Training Name', 3:'Expiry Date'}
         # Chart for all the data
-        chart_treeview = SortableTreeview(chart_frame, selectmode='extended', columns=columns,
+        self.chart_treeview = SortableTreeview(chart_frame, selectmode='extended', columns=columns,
                                           yscrollcommand=chart_tree_scroll.set)
         # chart_treeview.tag_configure('checked', background='#a0f79c')
-        chart_tree_scroll.config(command=chart_treeview.yview)
-        contacts = []
-        # Fake test data (lorem ipsum to fill the chart)
-        for n in range(1, 100):
-            contacts.append((f'first {n} last {n}', f'email{n}@a.com', 'YPT', '6/1/23'))
-        # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
-        for contact in contacts:
-            chart_treeview.insert('', END, values=contact, tags=('checked',))
-        chart_treeview.column('0', anchor='w', minwidth=120, width=130, stretch=YES)
-        chart_treeview.column('1', anchor="w", minwidth=120, width=130, stretch=YES)
-        chart_treeview.column('2', anchor="w", minwidth=120, width=130, stretch=YES)
-        chart_treeview.column('3', anchor="w", minwidth=120, width=130, stretch=YES)
-        chart_treeview.pack(expand=True, fill='both')
+        chart_tree_scroll.config(command=self.chart_treeview.yview)
+        self.update_chart(parent.data)
+        self.chart_treeview.column('0', anchor='w', minwidth=120, width=130, stretch=YES)
+        self.chart_treeview.column('1', anchor="w", minwidth=120, width=130, stretch=YES)
+        self.chart_treeview.column('2', anchor="w", minwidth=120, width=130, stretch=YES)
+        self.chart_treeview.column('3', anchor="w", minwidth=120, width=130, stretch=YES)
+        self.chart_treeview.pack(expand=True, fill='both')
         self.add(chart_frame, weight=1)
+
+    # Update chart once self.data is updated
+    def update_chart(self, data):
+        # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
+        for row in data:
+            self.chart_treeview.insert('', END, values=row, tags=('checked',))
 
 
 # Middle selected emails column
