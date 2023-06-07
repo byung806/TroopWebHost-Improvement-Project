@@ -14,7 +14,13 @@ class App(Tk):
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
         self.title('TroopWebHost Improvement Project')
-        self.geometry('1280x720')
+
+        screen_width = self.winfo_screenwidth()  # Width of the screen
+        screen_height = self.winfo_screenheight()
+        x = (screen_width/2) - (1280/2)
+        y = (screen_height/2) - (720/2)
+        
+        self.geometry('1280x720+%d+%d' % (x, y))
         
         # Focus on every object with mouse click (so entry boxes/textboxes can be deselected)
         self.bind_all("<1>", lambda event: event.widget.focus_set())
@@ -57,8 +63,10 @@ class LoginScreen(Frame):
         def authenticate(*_):
             username = username_entry.get()
             password = password_entry.get()
+            with open('login.txt', 'r') as f:
+                user, pw = f.read().split('\n')[:2]
             # session = get_logged_in_session(username, password)
-            if session is None:  # incorrect username/password
+            if not (username==user and password==pw):  # incorrect username/password
                 password_entry.reset()
                 error_label.grid(row=3, column=0)
             else:

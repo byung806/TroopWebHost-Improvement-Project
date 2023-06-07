@@ -69,7 +69,7 @@ class SortableTreeview(Treeview):
         if self.col_names[col] == 'Expiry Date':
             column.sort(reverse=reverse, key=lambda x: datetime.datetime.strptime('12/22/2222', r'%m/%d/%Y') if x[1] == '' else datetime.datetime.strptime(x[1], r'%m/%d/%Y'))
         else:
-            column.sort(reverse=reverse, key=lambda x: x[1])
+            column.sort(reverse=reverse, key=lambda x: x[1].lower())
     
         # Rearrange original rows in the chart based on sort
         for i, (iid, value) in enumerate(column):
