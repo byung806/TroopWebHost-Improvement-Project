@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import END
+from tkinter import END, PhotoImage
 from tkinter.ttk import Entry, Treeview
 
 
@@ -74,3 +74,73 @@ class SortableTreeview(Treeview):
         # Set sort command to sort other way on next click
         self.heading(col, text=self.col_names[col], command=lambda col_copy=col: self.sort_by(col_copy, not reverse), anchor='center')
         
+
+# Custom class to create checkable rows in a Treeview
+class CheckableSortableTreeview(SortableTreeview):
+    def __init__(self, master=None, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.checked_img = PhotoImage(file='checked.png')
+        self.unchecked_img = PhotoImage(file='unchecked.png')
+        self.selected = set()
+
+        self.tag_configure('checked', background='#a0f79c', image=self.checked_img)
+        self.tag_configure('unchecked', background='#eeeeee', image=self.unchecked_img)
+        # self.bind("<Button-1>", self.box_click, True)
+
+    # Uncheck row with item
+    def check_row(self, item):
+        self.item(item, tags=("checked",))
+
+    # Check row with item
+    def uncheck_row(self, item):
+        self.item(item, tags=("unchecked",))
+
+    # Function called when user clicks on treeview
+    def box_click(self, event):
+        x, y, widget = event.x, event.y, event.widget
+        # element_clicked = widget.identify('element', x, y)
+        # if 'image' in element_clicked:
+        #     # a box was clicked
+        item = self.identify_row(y)
+        tags = self.item(item, 'tags')
+        if 'unchecked' in tags:
+            self.check_row(item)
+        else:
+            self.uncheck_row(item)
+
+    def get_selected_items(self):
+        self.update()
+        return self.selection()
+
+    # Get currently selected items (emails) in the chart
+    def get_selected_items_email(self):
+        selected_items = self.selected
+        emails = []
+        for item in selected_items:
+            # Get email
+            email = self.item(item)['values'][3]
+            emails.append(email)
+        return list(set(emails))
+    
+
+    def add_selected(self):
+        selected_items = self.selection()
+        for item in selected_items:
+            self.selected.add(item)
+    
+
+    def remove_selected(self):
+        selected_items = self.selection()
+        for item in selected_items:
+            if item in self.selected:
+                self.selected.remove(item)
+
+
+    # Highlight selected items in chart
+    def color_selected(self):
+        selected_items = self.selected
+        for item in self.get_children():
+            if item in selected_items:
+                self.check_row(item)
+            else:
+                self.uncheck_row(item)
