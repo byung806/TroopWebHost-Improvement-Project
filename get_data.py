@@ -66,7 +66,7 @@ def get_data(logged_in_session):
     # soup.findAll finds all <table> tags in the HTML
     for entry in soup.findAll('table'):
         # Loop through each data entry
-        row = ['' for _ in range(8)]
+        row = ['' for _ in range(9)]
         # For each <tr> tag 
         for tr in entry.findAll('tr', id=True):
             column_td = tr.find('td', class_='mobile-grid-caption')
@@ -95,7 +95,7 @@ def get_data(logged_in_session):
         'SMS': 6,
     }
 
-    email_data = []
+    email_data = {}
     soup = BeautifulSoup(send_email_page, 'html.parser')
     tbody = soup.findAll('tbody')[1]
     for tr in tbody.findAll('tr'):
@@ -118,12 +118,15 @@ def get_data(logged_in_session):
                 value = value.text.strip()
             column = columns[label]
             row[column] = value
-        email_data.append(row)
+        # If person is an adult
+        if row[1] == 'Y':
+            email_data[row[0]] = row[5]
 
-    # Combine two sets of data
-    for person in email_data:
-        pass
-    
+    # Combine two sets of data into columns:
+    # Name, Training, Expiry Date, Email
+    adult_training_data = [[p[0], p[3], p[6], *email_data[p[0]]] for p in adult_training_data]
+    return adult_training_data    
+
 
 # For testing
 if __name__ == '__main__':
