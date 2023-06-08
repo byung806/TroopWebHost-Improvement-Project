@@ -1,5 +1,4 @@
-import tkinter as tk
-from tkinter import END, PhotoImage
+from tkinter import END
 from tkinter.ttk import Entry, Treeview
 from datetime import datetime
 
