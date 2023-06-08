@@ -75,7 +75,7 @@ class LoginScreen(Frame):
             if session is None:  # incorrect username/password
                 password_entry.reset_with_focus()
                 error_label.grid(row=3, column=0)
-                error_label.after(5000, lambda *_: error_label.grid_forget())
+                error_label.after(3000, lambda *_: error_label.grid_forget())
             else:
                 controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
                 controller.get_data(session)
@@ -233,6 +233,7 @@ class EmailTemplateColumn(Frame):
 
         # Top error message / success message
         self.top_label = Label(self)
+        self.top_label.bind('<Configure>', lambda _: self.top_label.config(wraplength=self.top_label.winfo_width()))
 
         # Login frame
         self.login_to_email_frame = Frame(self)
@@ -266,7 +267,7 @@ class EmailTemplateColumn(Frame):
         self.update_templates_from_json()
 
     # Attempt to send email (returns True if success and False otherwise)
-    def send_email(self, _):
+    def send_email(self, *_):
         email, password = self.email_to_use.get(), self.passw_to_use.get()
         recipients = self.parent_widget.selected
         subject = self.subject_entry.get()
@@ -277,13 +278,13 @@ class EmailTemplateColumn(Frame):
         if success:
             self.top_label.config(text=f'Success! Email sent to {len(recipients)} recipients.')
         else:
-            self.top_label.config(text='Email failed to send.')
+            self.top_label.config(text='Email failed to send. Make sure you\'re connected to the internet, have at least 1 recipient selected, and your password is your app password, not your normal password.')
             self.passw_to_use.reset_with_focus()
 
         # Make label appear
         self.top_label.pack(padx=8, pady=8, side=TOP, before=self.login_to_email_frame, fill='x')
         # Make label disappear after 5 seconds
-        self.top_label.after(5000, lambda *_: self.top_label.pack_forget())
+        self.top_label.after(20000, lambda *_: self.top_label.pack_forget())
 
     # Called when user changes to a different template (new_template is name of template)
     def on_template_change(self, new_template):
