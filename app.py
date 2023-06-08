@@ -42,8 +42,8 @@ class App(Tk):
             container, controller=self, orient='horizontal')
 
         # Open login screen first
-        self.current_screen = App.DATA_VISUALIZATION_SCREEN
-        self.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
+        self.current_screen = App.LOGIN_SCREEN
+        self.switch_screen_to(App.LOGIN_SCREEN)
 
     # Switch screens
     def switch_screen_to(self, name):
@@ -73,7 +73,7 @@ class LoginScreen(Frame):
             password = password_entry.get()
             session = get_logged_in_session(username, password)
             if session is None:  # incorrect username/password
-                password_entry.reset()
+                password_entry.reset_with_focus()
                 error_label.grid(row=3, column=0)
                 error_label.after(5000, lambda *_: error_label.grid_forget())
             else:
@@ -230,36 +230,33 @@ class EmailTemplateColumn(Frame):
         self.parent_widget = parent
 
         self.templates = dict()
-        self.options = list()
 
         # Top error message / success message
         self.top_label = Label(self)
 
         # Login frame
         self.login_to_email_frame = Frame(self)
-        self.email_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Email to Use')
+        self.email_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Sender Email')
         self.email_to_use.pack(padx=8, pady=8, side=LEFT, expand=True)
-        self.passw_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Password for Email', show='*')
+        self.passw_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Email Password', show='*')
         self.passw_to_use.pack(padx=8, pady=8, side=RIGHT, expand=True)
         self.login_to_email_frame.pack(side=TOP, fill='x')
 
         # Separator
-        separator = Separator(self, orient=HORIZONTAL)
-        separator.pack(fill='x', pady=8)
-
-        # Subject & send email frame
-        self.subject_send_email_frame = Frame(self)
-        self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
-        self.subject_entry.pack(padx=8, pady=8, side=LEFT, expand=True, fill='x')
-        email_send_button = Button(self.subject_send_email_frame, text='Send Email', style='Accent.TButton', command=self.send_email)
-        email_send_button.pack(padx=8, pady=8, side=RIGHT)
-        self.subject_send_email_frame.pack(side=TOP, fill='x')
+        self.separator = Separator(self, orient=HORIZONTAL)
+        self.separator.pack(fill='x', pady=8)
 
         # Template dropdown
         self.select_template_dropdown = OptionMenu(self, '')
         self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x')
-        # self.select_template_dropdown = OptionMenu(self, StringVar(value=self.options[1]), *self.options, command=self.on_template_change)
-        # self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x')
+
+        # Subject & send email frame
+        self.subject_send_email_frame = Frame(self)
+        self.email_send_button = Button(self.subject_send_email_frame, text='Send Email', style='Accent.TButton', command=self.send_email)
+        self.email_send_button.pack(padx=8, pady=8, side=RIGHT)
+        self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
+        self.subject_entry.pack(padx=8, pady=8, side=LEFT, expand=True, fill='x', before=self.email_send_button)
+        self.subject_send_email_frame.pack(side=TOP, fill='x')
 
         # Email body
         self.template_text_box = Text(self, wrap=WORD, width=50, borderwidth=5)
@@ -281,7 +278,7 @@ class EmailTemplateColumn(Frame):
             self.top_label.config(text=f'Success! Email sent to {len(recipients)} recipients.')
         else:
             self.top_label.config(text='Email failed to send.')
-            self.passw_to_use.reset()
+            self.passw_to_use.reset_with_focus()
 
         # Make label appear
         self.top_label.pack(padx=8, pady=8, side=TOP, before=self.login_to_email_frame, fill='x')
@@ -290,22 +287,36 @@ class EmailTemplateColumn(Frame):
 
     # Called when user changes to a different template (new_template is name of template)
     def on_template_change(self, new_template):
+        template_dict = self.templates[new_template]
+
+        subject = template_dict['subject']
+        self.subject_entry.clear_placeholder()
+        self.subject_entry.insert(0, subject)
+        if subject == '':
+            self.subject_entry.reset_without_focus()
+
+        body = template_dict['body']
         self.template_text_box.delete('1.0', END+'-1c')
-        self.template_text_box.insert('1.0', self.templates[new_template])
+        self.template_text_box.insert('1.0', body)
 
     # Read from json, then update templates dropdown and textbox
     def update_templates_from_json(self):
         self.templates = self.read_templates_from_json()
 
-        self.options = list(self.templates.keys())
+
+        options = list(self.templates.keys())
         # Required empty first option for an OptionMenu
-        self.options.insert(0, '')
+        options.insert(0, '')
 
         self.select_template_dropdown.pack_forget()
-        self.select_template_dropdown = OptionMenu(self, StringVar(value=self.options[1]), *self.options, command=self.on_template_change)
-        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x', after=self.subject_send_email_frame)
+        self.select_template_dropdown = OptionMenu(self, StringVar(value=options[1]), *options, command=self.on_template_change)
+        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x', after=self.separator)
 
-        self.on_template_change(self.options[1])
+        self.subject_entry.pack_forget()
+        self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
+        self.subject_entry.pack(padx=8, pady=8, side=LEFT, expand=True, fill='x', before=self.email_send_button)
+
+        self.on_template_change(options[1])
 
     # Read templates from json file
     def read_templates_from_json(self):

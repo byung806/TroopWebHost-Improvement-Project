@@ -1,3 +1,14 @@
 {
-    "YPT": "Good evening,\n\nYou are receiving this email because your Youth Protection Training (YPT) is either expired, is about to expire, or has not been completed previously.\n\nYPT is mandatory for all adults involved in Scout activities where youth are present.  The training takes about 60 min to complete.  \n\nPlease follow the instructions below to complete your training and send me the certificate when done.\n\n1. Log-in (register 1st time) at https://my.scouting.org/\n2. Click on Menu (top left), then My Dashboard\n3. Click on YPT (top center)\n4. Click on Take Course (right side)\n5. When completed, go back to My Dashboard\n6. Wait approximately 5 minutes and then click on Completions (top center)\n7. Click on the training taken to bring up your Certificate of completion.\n8. Download your certificate\n9. Send the the certificate (pdf) to me - stefaniedraisen@gmail.com\n\nThank you so much for your attention to this matter,\nStefanie Draisen"
+    "YPT": {
+        "subject": "Expired Youth Protection Training",
+        "body": "Good evening,\n\nYou are receiving this email because your Youth Protection Training (YPT) is either expired, is about to expire, or has not been completed previously.\n\nYPT is mandatory for all adults involved in Scout activities where youth are present.  The training takes about 60 min to complete.  \n\nPlease follow the instructions below to complete your training and send me the certificate when done.\n\n1. Log-in (register 1st time) at https://my.scouting.org/\n2. Click on Menu (top left), then My Dashboard\n3. Click on YPT (top center)\n4. Click on Take Course (right side)\n5. When completed, go back to My Dashboard\n6. Wait approximately 5 minutes and then click on Completions (top center)\n7. Click on the training taken to bring up your Certificate of completion.\n8. Download your certificate\n9. Send the the certificate (pdf) to me - stefaniedraisen@gmail.com\n\nThank you so much for your attention to this matter,\nStefanie Draisen"
+    },
+    "Test": {
+        "subject": "Test subject",
+        "body": "Test body"
+    },
+    "Custom": {
+        "subject": "",
+        "body": ""
+    }
 }
