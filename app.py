@@ -159,13 +159,13 @@ class DataVisualizerColumn(PanedWindow):
         sorting_frame = Frame(self)
         add_selected_button = Button(sorting_frame, text='Add Selected',
                                      command=lambda: parent.add_selected(), style='Accent.TButton')
-        add_selected_button.pack(padx=8, pady=15, side='left')
+        add_selected_button.pack(padx=8, pady=8, side='left')
         remove_selected_button = Button(sorting_frame, text='Remove Selected',
                                         command=lambda: parent.remove_selected(), style='Accent.TButton')
-        remove_selected_button.pack(padx=8, pady=15, side='left')
+        remove_selected_button.pack(padx=8, pady=8, side='left')
         deselect_all_button = Button(sorting_frame, text='Remove All',
                                      command=lambda: parent.remove_all_selected(), style='TButton')
-        deselect_all_button.pack(padx=8, pady=15, side='right')
+        deselect_all_button.pack(padx=8, pady=8, side='right')
         self.add(sorting_frame)
 
         # Bottom chart frame
@@ -229,27 +229,93 @@ class SelectedEmailsColumn(Frame):
 class EmailTemplateColumn(Frame):
     def __init__(self, parent, *args, **kwargs):
         Frame.__init__(self, parent, *args, **kwargs)
+        self.parent_widget = parent
 
-        # Top selected template frame
-        select_template_frame = Frame(self)
-        options = ['', 'Default', 'Custom']
-        # Dropdown to choose email templates
-        select_template_dropdown = OptionMenu(
-            select_template_frame, StringVar(value=options[1]), *options)
-        select_template_dropdown.pack(side=LEFT)
-        # Button to send the email
-        email_send_button = Button(
-            select_template_frame, text='Send Email', style='Accent.TButton')
-        email_send_button.pack(side=RIGHT)
-        select_template_frame.pack(side='top', fill='x')
+        self.templates = dict()
+        self.options = list()
 
-        # Bottom template textbox frame
-        template_text_frame = Frame(self)
-        # Textbox to hold the email template
-        # width in characters not pixels
-        template_text_box = Text(template_text_frame, wrap=WORD, width=50)
-        template_text_box.pack(expand=True, fill='both')
-        template_text_frame.pack(side='top', expand=True, fill='both')
+        # Top error message / success message
+        self.top_label = Label(self)
+
+        # Login frame
+        self.login_to_email_frame = Frame(self)
+        self.email_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Email to Use')
+        self.email_to_use.pack(padx=8, pady=8, side=LEFT, expand=True)
+        self.passw_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Password for Email', show='*')
+        self.passw_to_use.pack(padx=8, pady=8, side=RIGHT, expand=True)
+        self.login_to_email_frame.pack(side=TOP, fill='x')
+
+        # Separator
+        separator = Separator(self, orient=HORIZONTAL)
+        separator.pack(fill='x', pady=8)
+
+        # Subject & send email frame
+        self.subject_send_email_frame = Frame(self)
+        self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
+        self.subject_entry.pack(padx=8, pady=8, side=LEFT, expand=True, fill='x')
+        email_send_button = Button(self.subject_send_email_frame, text='Send Email', style='Accent.TButton', command=self.send_email)
+        email_send_button.pack(padx=8, pady=8, side=RIGHT)
+        self.subject_send_email_frame.pack(side=TOP, fill='x')
+
+        # Template dropdown
+        self.select_template_dropdown = OptionMenu(self, '')
+        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x')
+        # self.select_template_dropdown = OptionMenu(self, StringVar(value=self.options[1]), *self.options, command=self.on_template_change)
+        # self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x')
+
+        # Email body
+        self.template_text_box = Text(self, wrap=WORD, width=50, borderwidth=5)
+        self.template_text_box.pack(padx=8, pady=8, side=TOP, expand=True, fill=BOTH)
+
+        # Fill in template dropdown & text box from json
+        self.update_templates_from_json()
+
+    # Attempt to send email (returns True if success and False otherwise)
+    def send_email(self, _):
+        email, password = self.email_to_use.get(), self.passw_to_use.get()
+        recipients = self.parent_widget.selected
+        subject = self.subject_entry.get()
+        body = self.template_text_box.get('1.0', END+'-1c')
+        
+        # Try to send email
+        success = send_email(email, password, recipients, subject, body)
+        if success:
+            self.top_label.config(text=f'Success! Email sent to {len(recipients)} recipients.')
+        else:
+            self.top_label.config(text='Email failed to send.')
+            self.passw_to_use.reset()
+
+        # Make label appear
+        self.top_label.pack(padx=8, pady=8, side=TOP, before=self.login_to_email_frame, fill='x')
+        # Make label disappear after 5 seconds
+        self.top_label.after(5000, lambda *_: self.top_label.pack_forget())
+
+    # Called when user changes to a different template (new_template is name of template)
+    def on_template_change(self, new_template):
+        self.template_text_box.delete('1.0', END+'-1c')
+        self.template_text_box.insert('1.0', self.templates[new_template])
+
+    # Read from json, then update templates dropdown and textbox
+    def update_templates_from_json(self):
+        self.templates = self.read_templates_from_json()
+
+        self.options = list(self.templates.keys())
+        # Required empty first option for an OptionMenu
+        self.options.insert(0, '')
+
+        self.select_template_dropdown.pack_forget()
+        self.select_template_dropdown = OptionMenu(self, StringVar(value=self.options[1]), *self.options, command=self.on_template_change)
+        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x', after=self.subject_send_email_frame)
+
+        self.on_template_change(self.options[1])
+
+    # Read templates from json file
+    def read_templates_from_json(self):
+        return json.load(open('templates.json', 'r'))
+
+    # Save templates to json file
+    def save_templates_to_json(self):
+        pass
 
 
 # The Frame for the email login screen
