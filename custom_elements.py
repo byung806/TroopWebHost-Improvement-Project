@@ -1,4 +1,4 @@
-from tkinter import END
+from tkinter import END, Text
 from tkinter.ttk import Entry, Treeview
 from datetime import datetime
 
@@ -54,34 +54,52 @@ class PlaceholderEntry(Entry):
         if self.has_content:
             return content
         return ''
+    
 
-    def reset(self, *_):
-        self.delete(0, END)
+class PlaceholderTextbox(Text):
+    def __init__(self, master=None, placeholder='', fg='black', placeholder_color='grey50', *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self.placeholder = placeholder
+        self.fg = fg
+        self.placeholder_color = placeholder_color
+        self.has_content = False
+        self.bind('<FocusIn>', self._clear_placeholder)
+        self.bind('<FocusOut>', self._fill_placeholder)
+        self._fill_placeholder()
+
+    # Resets entry box after a bad password (clears text and sets focus)
+    def reset_with_focus(self, *_):
+        self.delete('1.0', END+'-1c')
         self.has_content = True
         self.focus_set()
 
-    # Clears placeholder text in entry, called when user clicks into entry box
+    # Resets entry box (clears text, adds placeholder, doesn't set focus)
+    def reset_without_focus(self, *_):
+        self.delete('1.0', END+'-1c')
+        self._fill_placeholder()
 
-    def clear_placeholder(self, *_):
+    # Clears placeholder text in entry, called when user clicks into entry box
+    def _clear_placeholder(self, *_):
         if not self.has_content:
             self.has_content = True
             self.config(foreground=self.fg)
-            self.config(show=self.show_original)
-            self.delete(0, END)
+            self.delete('1.0', END+'-1c')
+
+    # Clears placeholder text in entry (doesn't set placeholder and doesn't set focus)
+    def clear_placeholder(self):
+        self.has_content = False
+        self._clear_placeholder()
 
     # Fills placeholder text in entry, called when user clicks out of entry & box is empty
-
-    def fill_placeholder(self, *_):
-        if super().get() == '':
-            self.insert(0, self.placeholder)
+    def _fill_placeholder(self, *_):
+        if super().get('1.0', END+'-1c') == '':
+            self.insert('1.0', self.placeholder)
             self.config(foreground=self.placeholder_color)
-            self.config(show='')
             self.has_content = False
 
     # Override original get function to return '' when there's a placeholder
-
     def get(self):
-        content = super().get()
+        content = super().get('1.0', END+'-1c')
         if self.has_content:
             return content
         return ''
