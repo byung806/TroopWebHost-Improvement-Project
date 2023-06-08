@@ -1,6 +1,6 @@
 from tkinter import Tk, Text, CENTER, LEFT, RIGHT, TOP, END, WORD, YES, HORIZONTAL, VERTICAL, BOTH, StringVar, PanedWindow
 from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu, Separator
-from custom_elements import PlaceholderEntry, SortableTreeview, CheckableSortableTreeview
+from custom_elements import PlaceholderEntry, SortableTreeview, CheckableSortableTreeview, PlaceholderTextbox
 from get_data import get_logged_in_session, get_data
 from send_email import send_email
 import json
@@ -155,13 +155,13 @@ class DataVisualizerColumn(PanedWindow):
 
         # Top sorting frame
         sorting_frame = Frame(self)
-        add_selected_button = Button(sorting_frame, text='Add Selected',
+        add_selected_button = Button(sorting_frame, text='Add Selected to Recipients',
                                      command=lambda: parent.add_selected(), style='Accent.TButton')
         add_selected_button.pack(padx=8, pady=8, side='left')
-        remove_selected_button = Button(sorting_frame, text='Remove Selected',
+        remove_selected_button = Button(sorting_frame, text='Remove Selected from Recipients',
                                         command=lambda: parent.remove_selected(), style='Accent.TButton')
         remove_selected_button.pack(padx=8, pady=8, side='left')
-        deselect_all_button = Button(sorting_frame, text='Remove All',
+        deselect_all_button = Button(sorting_frame, text='Remove All Recipients',
                                      command=lambda: parent.remove_all_selected(), style='TButton')
         deselect_all_button.pack(padx=8, pady=8, side='right')
         self.add(sorting_frame)
@@ -205,7 +205,7 @@ class SelectedEmailsColumn(Frame):
         selected_tree_scroll = Scrollbar(self)
         selected_tree_scroll.pack(side=RIGHT, fill='y')
         # Chart for the selected people
-        self.selected_treeview = SortableTreeview(self, selectmode='none', columns={0: 'Selected'},
+        self.selected_treeview = SortableTreeview(self, selectmode='none', columns={0: 'Email Recipients'},
                                                   yscrollcommand=selected_tree_scroll.set)
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_tree_scroll.config(command=self.selected_treeview.yview)
@@ -251,6 +251,11 @@ class EmailTemplateColumn(Frame):
         self.select_template_dropdown = OptionMenu(self, '')
         self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x')
 
+        # Label about editing loaded template
+        self.disclaimer_label = Label(self, text='Editing the subject or message loaded from a template will not change the template.')
+        self.disclaimer_label.bind('<Configure>', lambda _: self.disclaimer_label.config(wraplength=self.disclaimer_label.winfo_width()))
+        self.disclaimer_label.pack(padx=8, pady=8, side=TOP, fill='x')
+
         # Subject & send email frame
         self.subject_send_email_frame = Frame(self)
         self.email_send_button = Button(self.subject_send_email_frame, text='Send Email', style='Accent.TButton', command=self.send_email)
@@ -260,7 +265,7 @@ class EmailTemplateColumn(Frame):
         self.subject_send_email_frame.pack(side=TOP, fill='x')
 
         # Email body
-        self.template_text_box = Text(self, wrap=WORD, width=50, borderwidth=5)
+        self.template_text_box = PlaceholderTextbox(self, placeholder='Type your message here...', wrap=WORD, width=50, borderwidth=5)
         self.template_text_box.pack(padx=8, pady=8, side=TOP, expand=True, fill=BOTH)
 
         # Fill in template dropdown & text box from json
@@ -271,7 +276,7 @@ class EmailTemplateColumn(Frame):
         email, password = self.email_to_use.get(), self.passw_to_use.get()
         recipients = self.parent_widget.selected
         subject = self.subject_entry.get()
-        body = self.template_text_box.get('1.0', END+'-1c')
+        body = self.template_text_box.get()
         
         # Try to send email
         success = send_email(email, password, recipients, subject, body)
@@ -297,8 +302,10 @@ class EmailTemplateColumn(Frame):
             self.subject_entry.reset_without_focus()
 
         body = template_dict['body']
-        self.template_text_box.delete('1.0', END+'-1c')
+        self.template_text_box.clear_placeholder()
         self.template_text_box.insert('1.0', body)
+        if body == '':
+            self.template_text_box.reset_without_focus()
 
     # Read from json, then update templates dropdown and textbox
     def update_templates_from_json(self):
@@ -311,7 +318,7 @@ class EmailTemplateColumn(Frame):
 
         self.select_template_dropdown.pack_forget()
         self.select_template_dropdown = OptionMenu(self, StringVar(value=options[1]), *options, command=self.on_template_change)
-        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x', after=self.separator)
+        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x', after=self.disclaimer_label)
 
         self.subject_entry.pack_forget()
         self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
