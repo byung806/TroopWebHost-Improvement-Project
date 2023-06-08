@@ -28,3 +28,7 @@ __pycache__/
 .breakpoints
 
 test.py
+
+build/
+dist/
+*.spec
