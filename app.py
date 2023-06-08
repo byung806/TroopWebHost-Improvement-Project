@@ -3,11 +3,13 @@ from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, Opti
 from custom_elements import PlaceholderEntry, SortableTreeview, CheckableSortableTreeview, PlaceholderTextbox
 from get_data import get_logged_in_session, get_data
 from send_email import send_email
-import json
+import json, os, sys
+
+
+def get_real_path_for_executable(filename):
+    return os.path.join(os.path.dirname(sys.executable), filename)
 
 # The main window of the application
-
-
 class App(Tk):
     LOGIN_SCREEN = 0
     DATA_VISUALIZATION_SCREEN = 1
@@ -328,7 +330,7 @@ class EmailTemplateColumn(Frame):
 
     # Read templates from json file
     def read_templates_from_json(self):
-        return json.load(open('templates.json', 'r'))
+        return json.load(open(get_real_path_for_executable('templates.json'), 'r'))
 
     # Save templates to json file
     def save_templates_to_json(self):
@@ -379,7 +381,7 @@ class EmailLoginColumn(Frame):
 if __name__ == '__main__':
     # Start app and start main loop
     app = App(1280, 720)
-    app.tk.call('source', 'forest-light.tcl')
+    app.tk.call('source', get_real_path_for_executable('forest-light.tcl'))
 
     s = Style()
     s.theme_use('forest-light')
