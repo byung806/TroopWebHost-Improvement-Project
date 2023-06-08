@@ -1,7 +1,9 @@
-from tkinter import Tk, Text, CENTER, NSEW, LEFT, RIGHT, END, WORD, YES, VERTICAL, StringVar, PanedWindow
-from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu
+from tkinter import Tk, Text, CENTER, LEFT, RIGHT, TOP, END, WORD, YES, HORIZONTAL, VERTICAL, BOTH, StringVar, PanedWindow
+from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu, Separator
 from custom_elements import PlaceholderEntry, SortableTreeview, CheckableSortableTreeview
 from get_data import get_logged_in_session, get_data
+from send_email import send_email
+import json
 
 # The main window of the application
 
@@ -40,8 +42,8 @@ class App(Tk):
             container, controller=self, orient='horizontal')
 
         # Open login screen first
-        self.current_screen = App.LOGIN_SCREEN
-        self.switch_screen_to(App.LOGIN_SCREEN)
+        self.current_screen = App.DATA_VISUALIZATION_SCREEN
+        self.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
 
     # Switch screens
     def switch_screen_to(self, name):
@@ -73,6 +75,7 @@ class LoginScreen(Frame):
             if session is None:  # incorrect username/password
                 password_entry.reset()
                 error_label.grid(row=3, column=0)
+                error_label.after(5000, lambda *_: error_label.grid_forget())
             else:
                 controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
                 controller.get_data(session)
@@ -91,7 +94,6 @@ class LoginScreen(Frame):
         login_button = Button(center_frame, text='Login', command=authenticate)
 
         # Position each element on the screen
-        # login_label.grid(row=0, column=0, sticky='nsew', pady=25)
         username_entry.grid(row=1, column=0, padx=10, pady=10)
         password_entry.grid(row=2, column=0, padx=10, pady=10)
         login_button.grid(row=4, column=0, pady=10)
@@ -110,6 +112,7 @@ class DataVisualizationScreen(PanedWindow):
         self.controller = controller
         # Set data to empty until it can be filled with updated data
         self.data = []
+        # List of all emails currently in the selected emails list
         self.selected = []
 
         min_sizes = [500, 130, 400]
@@ -119,12 +122,7 @@ class DataVisualizationScreen(PanedWindow):
         self.selected_emails_column = SelectedEmailsColumn(self)
         self.add(self.selected_emails_column, minsize=min_sizes[1])
         self.email_template_column = EmailTemplateColumn(self)
-        self.email_login_column = EmailLoginColumn(
-            self, replacement=self.email_template_column)
-        self.add(self.email_login_column, minsize=min_sizes[2])
-
-        # self.update_selected()
-        # self.data_visualizer_column.chart_treeview.bind("<Button-2>", lambda _: self.update_selected())
+        self.add(self.email_template_column, minsize=min_sizes[2])
 
     # Request and parse data from TroopWebHost
     def get_data(self, session):
