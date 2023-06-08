@@ -12,11 +12,48 @@ class PlaceholderEntry(Entry):
         self.placeholder_color = placeholder_color
         self.has_content = False
         self.show_original = show
-        self.bind('<FocusIn>', self.clear_placeholder)
-        self.bind('<FocusOut>', self.fill_placeholder)
-        self.fill_placeholder()
+        self.bind('<FocusIn>', self._clear_placeholder)
+        self.bind('<FocusOut>', self._fill_placeholder)
+        self._fill_placeholder()
 
     # Resets entry box after a bad password (clears text and sets focus)
+    def reset_with_focus(self, *_):
+        self.delete(0, END)
+        self.has_content = True
+        self.focus_set()
+
+    # Resets entry box (clears text, adds placeholder, doesn't set focus)
+    def reset_without_focus(self, *_):
+        self.delete(0, END)
+        self._fill_placeholder()
+
+    # Clears placeholder text in entry, called when user clicks into entry box
+    def _clear_placeholder(self, *_):
+        if not self.has_content:
+            self.has_content = True
+            self.config(foreground=self.fg)
+            self.config(show=self.show_original)
+            self.delete(0, END)
+
+    # Clears placeholder text in entry (doesn't set placeholder and doesn't set focus)
+    def clear_placeholder(self):
+        self.has_content = False
+        self._clear_placeholder()
+
+    # Fills placeholder text in entry, called when user clicks out of entry & box is empty
+    def _fill_placeholder(self, *_):
+        if super().get() == '':
+            self.insert(0, self.placeholder)
+            self.config(foreground=self.placeholder_color)
+            self.config(show='')
+            self.has_content = False
+
+    # Override original get function to return '' when there's a placeholder
+    def get(self):
+        content = super().get()
+        if self.has_content:
+            return content
+        return ''
 
     def reset(self, *_):
         self.delete(0, END)
