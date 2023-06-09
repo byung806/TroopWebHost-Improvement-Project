@@ -6,7 +6,7 @@ from send_email import send_email
 from threading import Thread
 import json, os, sys
 
-DEBUG = False
+DEBUG = True
 
 
 def get_real_path_for_executable(filename):
@@ -319,19 +319,29 @@ class EmailTemplateColumn(Frame):
         recipients = self.parent_widget.selected
         subject = self.subject_entry.get()
         body = self.template_text_box.get()
+
+        self.email_send_button.config(style='TButton', command=None, text='Sending...')
+        self.email_send_button['state'] = DISABLED
         
         # Try to send email
+        email_thread = Thread(target=self.send_email_thread, args=(email, password, recipients, subject, body))
+        email_thread.start()
+
+    def send_email_thread(self, email, password, recipients, subject, body):
         success = send_email(email, password, recipients, subject, body)
         if success:
             self.top_label.config(text=f'Success! Email sent to {len(recipients)} recipients.')
         else:
-            self.top_label.config(text='Email failed to send. Make sure you\'re connected to the internet, have at least 1 recipient selected, and your password is your app password, not your normal password.')
+            self.top_label.config(text='Email failed to send. , have at least 1 recipient selected, and your password is your app password, not your normal password.')
             self.passw_to_use.reset_with_focus()
 
         # Make label appear
         self.top_label.pack(padx=8, pady=8, side=TOP, before=self.login_to_email_frame, fill='x')
         # Make label disappear after 5 seconds
         self.top_label.after(20000, lambda *_: self.top_label.pack_forget())
+
+        self.email_send_button.config(style='Accent.TButton', command=None, text='Send Email')
+        self.email_send_button['state'] = NORMAL
 
     # Called when user changes to a different template (new_template is name of template)
     def on_template_change(self, new_template):
