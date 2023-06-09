@@ -5,8 +5,11 @@ from get_data import get_logged_in_session, get_data
 from send_email import send_email
 import json, os, sys
 
+DEBUG = True
+
 
 def get_real_path_for_executable(filename):
+    if DEBUG: return filename
     return os.path.join(os.path.dirname(sys.executable), filename)
 
 # The main window of the application
@@ -241,7 +244,7 @@ class EmailTemplateColumn(Frame):
         self.login_to_email_frame = Frame(self)
         self.email_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Sender Email')
         self.email_to_use.pack(padx=8, pady=8, side=LEFT, expand=True)
-        self.passw_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Email Password', show='*')
+        self.passw_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='App Password', show='*')
         self.passw_to_use.pack(padx=8, pady=8, side=RIGHT, expand=True)
         self.login_to_email_frame.pack(side=TOP, fill='x')
 
@@ -249,14 +252,18 @@ class EmailTemplateColumn(Frame):
         self.separator = Separator(self, orient=HORIZONTAL)
         self.separator.pack(fill='x', pady=8)
 
-        # Template dropdown
-        self.select_template_dropdown = OptionMenu(self, '')
-        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x')
+        # Template selection frame
+        self.template_selection_frame = LabelFrame(self, text='Load from Template')
+        self.template_selection_frame.pack(padx=8, pady=8, side=TOP, fill='x')
 
         # Label about editing loaded template
-        self.disclaimer_label = Label(self, text='Editing the subject or message loaded from a template will not change the template.')
+        self.disclaimer_label = Label(self.template_selection_frame, text='Editing the subject or message loaded from a template will not change the template.')
         self.disclaimer_label.bind('<Configure>', lambda _: self.disclaimer_label.config(wraplength=self.disclaimer_label.winfo_width()))
         self.disclaimer_label.pack(padx=8, pady=8, side=TOP, fill='x')
+
+        # Template dropdown
+        self.select_template_dropdown = OptionMenu(self.template_selection_frame, '')
+        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x')
 
         # Subject & send email frame
         self.subject_send_email_frame = Frame(self)
