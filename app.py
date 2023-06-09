@@ -328,11 +328,11 @@ class EmailTemplateColumn(Frame):
         email_thread.start()
 
     def send_email_thread(self, email, password, recipients, subject, body):
-        success = send_email(email, password, recipients, subject, body)
+        success, message = send_email(email, password, recipients, subject, body)
         if success:
-            self.top_label.config(text=f'Success! Email sent to {len(recipients)} recipients.')
+            self.top_label.config(text=message)
         else:
-            self.top_label.config(text='Email failed to send. , have at least 1 recipient selected, and your password is your app password, not your normal password.')
+            self.top_label.config(text=message)
             self.passw_to_use.reset_with_focus()
 
         # Make label appear
