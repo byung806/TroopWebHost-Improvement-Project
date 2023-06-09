@@ -1,4 +1,4 @@
-from tkinter import Tk, Text, CENTER, LEFT, RIGHT, TOP, END, WORD, YES, HORIZONTAL, VERTICAL, BOTH, NORMAL, DISABLED, StringVar, PanedWindow
+from tkinter import Tk, CENTER, LEFT, RIGHT, TOP, END, WORD, YES, HORIZONTAL, VERTICAL, BOTH, NORMAL, DISABLED, StringVar, PanedWindow, PhotoImage
 from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu, Separator
 from custom_elements import PlaceholderEntry, SortableTreeview, CheckableSortableTreeview, PlaceholderTextbox
 from get_data import get_logged_in_session, get_data
