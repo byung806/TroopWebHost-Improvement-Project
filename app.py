@@ -151,6 +151,9 @@ class DataVisualizationScreen(PanedWindow):
         self.data_visualizer_column.enable_chart_selection()
         # Remove loading label
         self.data_visualizer_column.loading_label.pack_forget()
+        # Sort by default by date, then YPT
+        self.data_visualizer_column.chart_treeview.sort_by(2)
+        self.data_visualizer_column.chart_treeview.sort_by(1, reverse=True)
 
     def add_selected(self):
         self.data_visualizer_column.chart_treeview.add_selected()
