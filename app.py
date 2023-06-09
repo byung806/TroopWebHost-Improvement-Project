@@ -6,7 +6,7 @@ from send_email import send_email
 from threading import Thread
 import json, os, sys
 
-DEBUG = True
+DEBUG = False
 
 
 def get_real_path_for_executable(filename):
@@ -23,7 +23,7 @@ class App(Tk):
         Tk.__init__(self, *args, **kwargs)
         container = Frame(self)
         container.pack(side='top', fill='both', expand=True)
-        self.title('TroopWebHost Improvement Project')
+        self.title('Scouting Improvement App')
 
         # Center app when opened
         screen_width = self.winfo_screenwidth()  # Width of the screen
