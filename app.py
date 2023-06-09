@@ -74,14 +74,6 @@ class LoginScreen(Frame):
         Frame.__init__(self, parent)
         self.controller = controller
 
-        # Function to verify login credentials are correct
-        def authenticate(*_):
-            username = self.username_entry.get()
-            password = self.password_entry.get()
-            self.login_button['state'] = DISABLED
-            check_login_thread = Thread(target=self.authenticate_with_twh, args=(username, password))
-            check_login_thread.start()
-
         # Frame to keep login centered in the screen
         center_frame = LabelFrame(
             self, text='Sign in to TroopWebHost', labelanchor='n')
@@ -93,7 +85,7 @@ class LoginScreen(Frame):
             center_frame, show='*', placeholder='Password')
         self.error_label = Label(
             center_frame, text='Incorrect username or password.', style='TLabel')
-        self.login_button = Button(center_frame, text='Login', command=authenticate)
+        self.login_button = Button(center_frame, text='Login', command=self.authenticate, style='Accent.TButton')
 
         # Position each element on the screen
         self.username_entry.grid(row=1, column=0, padx=10, pady=10)
@@ -101,10 +93,19 @@ class LoginScreen(Frame):
         self.login_button.grid(row=4, column=0, pady=10)
 
         # Make enter key work to press login button
-        self.password_entry.bind('<Return>', authenticate)
+        self.password_entry.bind('<Return>', self.authenticate)
 
         # Place holding frame in the center of the screen
         center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+    # Function to verify login credentials are correct
+    def authenticate(self, *_):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        self.login_button.config(style='TButton', command=None)
+        self.login_button['state'] = DISABLED
+        check_login_thread = Thread(target=self.authenticate_with_twh, args=(username, password))
+        check_login_thread.start()
 
     # Authenticate by sending login to TroopWebHost, done on another thread
     def authenticate_with_twh(self, username, password):
@@ -113,6 +114,7 @@ class LoginScreen(Frame):
             self.password_entry.reset_with_focus()
             self.error_label.grid(row=3, column=0)
             self.error_label.after(3000, lambda *_: self.error_label.grid_forget())
+            self.login_button.config(style='Accent.TButton', command=self.authenticate)
             self.login_button['state'] = NORMAL
         else:
             self.controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
@@ -126,7 +128,7 @@ class DataVisualizationScreen(PanedWindow):
         PanedWindow.__init__(self, parent, *args, **kwargs)
         self.controller = controller
         # Set data to empty until it can be filled with updated data
-        self.data = [['Loading', 'Loading', 'Loading', 'Loading']]
+        self.data = [['...', '...', '...', '...']]
         # List of all emails currently in the selected emails list
         self.selected = []
 
@@ -142,8 +144,13 @@ class DataVisualizationScreen(PanedWindow):
     # Request and parse data from TroopWebHost
     def get_data(self, session):
         self.data = get_data(session)
+        # Put data in chart
         self.data_visualizer_column.update_chart(self.data)
+        # Enable buttons & chart
         self.data_visualizer_column.enable_buttons()
+        self.data_visualizer_column.enable_chart_selection()
+        # Remove loading label
+        self.data_visualizer_column.loading_label.pack_forget()
 
     def add_selected(self):
         self.data_visualizer_column.chart_treeview.add_selected()
@@ -168,17 +175,17 @@ class DataVisualizationScreen(PanedWindow):
 class DataVisualizerColumn(PanedWindow):
     def __init__(self, parent, *args, **kwargs):
         PanedWindow.__init__(self, parent, orient=VERTICAL, *args, **kwargs)
+        self.parent = parent
 
         # Top sorting frame
         sorting_frame = Frame(self)
-        self.add_selected_button = Button(sorting_frame, text='Add Selected to Recipients', state=DISABLED,
-                                     command=lambda: parent.add_selected(), style='Accent.TButton')
+        self.add_selected_button = Button(sorting_frame, text='Add Selected to Recipients', style='Accent.TButton')
         self.add_selected_button.pack(padx=8, pady=8, side='left')
-        self.remove_selected_button = Button(sorting_frame, text='Remove Selected from Recipients', state=DISABLED,
-                                        command=lambda: parent.remove_selected(), style='Accent.TButton')
+        self.remove_selected_button = Button(sorting_frame, text='Remove Selected from Recipients', style='Accent.TButton')
         self.remove_selected_button.pack(padx=8, pady=8, side='left')
-        self.deselect_all_button = Button(sorting_frame, text='Remove All Recipients', state=DISABLED,
-                                     command=lambda: parent.remove_all_selected(), style='TButton')
+        self.loading_label = Label(sorting_frame, text='Fetching data...')
+        self.loading_label.pack(padx=8, pady=8, side='left')
+        self.deselect_all_button = Button(sorting_frame, text='Remove All Recipients', style='TButton')
         self.deselect_all_button.pack(padx=8, pady=8, side='right')
         self.add(sorting_frame)
 
@@ -189,7 +196,7 @@ class DataVisualizerColumn(PanedWindow):
         chart_tree_scroll.pack(side=RIGHT, fill='y')
         columns = {0: 'Name', 1: 'Training Name', 2: 'Expiry Date', 3: 'Email'}
         # Chart for all the data
-        self.chart_treeview = CheckableSortableTreeview(chart_frame, selectmode='extended', columns=columns,
+        self.chart_treeview = CheckableSortableTreeview(chart_frame, selectmode='none', columns=columns,
                                                         yscrollcommand=chart_tree_scroll.set)
         chart_tree_scroll.config(command=self.chart_treeview.yview)
         self.update_chart(parent.data)
@@ -207,17 +214,21 @@ class DataVisualizerColumn(PanedWindow):
     # Update chart once self.data is updated
     def update_chart(self, data):
         for row in self.chart_treeview.get_children():
-            self.remove(row)
+            self.chart_treeview.delete(row)
         # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
         for row in data:
             self.chart_treeview.insert(
                 '', END, values=row, tags=('unchecked',))
+            
+    # Enable selection of chart
+    def enable_chart_selection(self):
+        self.chart_treeview.config(selectmode='extended')
     
     # Enable initially disabled buttons (when data is being scraped)
     def enable_buttons(self):
-        self.add_selected_button['state'] = NORMAL
-        self.remove_selected_button['state'] = NORMAL
-        self.deselect_all_button['state'] = NORMAL
+        self.add_selected_button.config(command=lambda: self.parent.add_selected())
+        self.remove_selected_button.config(command=lambda: self.parent.remove_selected())
+        self.deselect_all_button.config(command=lambda: self.parent.remove_all_selected())
 
 
 # Middle selected emails column
