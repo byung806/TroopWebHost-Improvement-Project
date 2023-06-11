@@ -369,14 +369,14 @@ class EmailTemplateColumn(Frame):
         options.insert(0, '')
 
         self.select_template_dropdown.pack_forget()
-        self.select_template_dropdown = OptionMenu(self, StringVar(value=options[2]), *options, command=self.on_template_change)
+        self.select_template_dropdown = OptionMenu(self, StringVar(value=options[3]), *options, command=self.on_template_change)
         self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x', after=self.disclaimer_label)
 
         self.subject_entry.pack_forget()
         self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
         self.subject_entry.pack(padx=8, pady=8, side=LEFT, expand=True, fill='x', before=self.email_send_button)
 
-        self.on_template_change(options[2])
+        self.on_template_change(options[3])
 
     # Read templates from json file
     def read_templates_from_json(self):
