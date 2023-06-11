@@ -65,7 +65,7 @@ class App(Tk):
 
     # Request and parse data from TroopWebHost
     def get_data(self, session):
-        self.screens[App.DATA_VISUALIZATION_SCREEN].get_data(session)
+        self.screens[App.DATA_VISUALIZATION_SCREEN].get_data(session, demo=True)
 
 
 # The Frame for the login screen
@@ -142,15 +142,15 @@ class DataVisualizationScreen(PanedWindow):
         self.add(self.email_template_column, minsize=min_sizes[2])
 
     # Request and parse data from TroopWebHost
-    def get_data(self, session):
-        self.data = get_data(session)
+    def get_data(self, session, demo=False):
+        self.data = get_data(session, demo=demo)
         # Put data in chart
         self.data_visualizer_column.update_chart(self.data)
         # Enable buttons & chart
         self.data_visualizer_column.enable_buttons()
         self.data_visualizer_column.enable_chart_selection()
         # Remove loading label
-        self.data_visualizer_column.loading_label.pack_forget()
+        #self.data_visualizer_column.loading_label.pack_forget()
         # Sort by default by date, then YPT
         self.data_visualizer_column.chart_treeview.sort_by(2)
         self.data_visualizer_column.chart_treeview.sort_by(1, reverse=True)
@@ -186,7 +186,7 @@ class DataVisualizerColumn(PanedWindow):
         self.add_selected_button.pack(padx=8, pady=8, side='left')
         self.remove_selected_button = Button(sorting_frame, text='Remove Selected from Recipients', style='Accent.TButton')
         self.remove_selected_button.pack(padx=8, pady=8, side='left')
-        self.loading_label = Label(sorting_frame, text='Fetching data...')
+        self.loading_label = Label(sorting_frame, text='Not real Boy Scout data.')
         self.loading_label.pack(padx=8, pady=8, side='left')
         self.deselect_all_button = Button(sorting_frame, text='Remove All Recipients', style='TButton')
         self.deselect_all_button.pack(padx=8, pady=8, side='right')
@@ -369,14 +369,14 @@ class EmailTemplateColumn(Frame):
         options.insert(0, '')
 
         self.select_template_dropdown.pack_forget()
-        self.select_template_dropdown = OptionMenu(self, StringVar(value=options[1]), *options, command=self.on_template_change)
+        self.select_template_dropdown = OptionMenu(self, StringVar(value=options[2]), *options, command=self.on_template_change)
         self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x', after=self.disclaimer_label)
 
         self.subject_entry.pack_forget()
         self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
         self.subject_entry.pack(padx=8, pady=8, side=LEFT, expand=True, fill='x', before=self.email_send_button)
 
-        self.on_template_change(options[1])
+        self.on_template_change(options[2])
 
     # Read templates from json file
     def read_templates_from_json(self):
@@ -388,6 +388,11 @@ class EmailTemplateColumn(Frame):
 
 
 if __name__ == '__main__':
+    # Copy app password to clipboard
+    import subprocess 
+    data = ''
+    subprocess.run("pbcopy", text=True, input=data)
+
     # Start app and start main loop
     app = App(1280, 720)
     app.tk.call('source', get_real_path_for_executable('forest-light.tcl'))

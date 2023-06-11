@@ -37,7 +37,13 @@ def get_logged_in_session(username, password):
         
 
 # Main function to scrape all the data and format it
-def get_data(logged_in_session):
+def get_data(logged_in_session, demo=False):
+    if demo:
+        import csv
+        with open('demo_data.csv', 'r') as f:
+            data = csv.reader(f, delimiter=',')
+            return set(tuple(entry) for entry in data)
+
     ADULT_TRAINING_URL = 'https://www.troopwebhost.org/FormList.aspx?Menu_Item_ID=45888&Stack=0'
     SEND_EMAIL_URL = 'https://www.troopwebhost.org/FormDetail.aspx?Menu_Item_ID=45961&Stack=1'
 
