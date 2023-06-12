@@ -6,7 +6,7 @@ from send_email import send_email
 from threading import Thread
 import json, os, sys
 
-DEBUG = True
+DEBUG = False
 
 
 def get_real_path_for_executable(filename):
@@ -150,7 +150,7 @@ class DataVisualizationScreen(PanedWindow):
         self.data_visualizer_column.enable_buttons()
         self.data_visualizer_column.enable_chart_selection()
         # Remove loading label
-        #self.data_visualizer_column.loading_label.pack_forget()
+        self.data_visualizer_column.loading_label.pack_forget()
         # Sort by default by date, then YPT
         self.data_visualizer_column.chart_treeview.sort_by(2)
         self.data_visualizer_column.chart_treeview.sort_by(1, reverse=True)
@@ -186,7 +186,7 @@ class DataVisualizerColumn(PanedWindow):
         self.add_selected_button.pack(padx=8, pady=8, side='left')
         self.remove_selected_button = Button(sorting_frame, text='Remove Selected from Recipients', style='Accent.TButton')
         self.remove_selected_button.pack(padx=8, pady=8, side='left')
-        self.loading_label = Label(sorting_frame, text='Not real Boy Scout data.')
+        self.loading_label = Label(sorting_frame, text='Fetching data...')
         self.loading_label.pack(padx=8, pady=8, side='left')
         self.deselect_all_button = Button(sorting_frame, text='Remove All Recipients', style='TButton')
         self.deselect_all_button.pack(padx=8, pady=8, side='right')
