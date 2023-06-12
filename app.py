@@ -390,7 +390,7 @@ class EmailTemplateColumn(Frame):
 if __name__ == '__main__':
     # Copy app password to clipboard
     import subprocess 
-    data = ''
+    data = open('cbt_software_app_password.txt', 'r').read().strip()
     subprocess.run("pbcopy", text=True, input=data)
 
     # Start app and start main loop
