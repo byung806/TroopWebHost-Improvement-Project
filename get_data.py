@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import os, sys
 
 
 # Log in using a POST request in a session
@@ -36,11 +37,13 @@ def get_logged_in_session(username, password):
         return session if login_successful else None
         
 
+def get_real_path_for_executable(filename):
+    return os.path.join(os.path.dirname(sys.executable), filename)
 # Main function to scrape all the data and format it
 def get_data(logged_in_session, demo=False):
     if demo:
         import csv
-        with open('demo_data.csv', 'r') as f:
+        with open(get_real_path_for_executable('demo_data.csv'), 'r') as f:
             data = csv.reader(f, delimiter=',')
             return set(tuple(entry) for entry in data)
 
