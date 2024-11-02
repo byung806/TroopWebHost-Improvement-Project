@@ -6,10 +6,10 @@ bs4==0.0.1
 certifi==2023.5.7
 charset-normalizer==3.1.0
 dnspython==2.3.0
-frozenlist==1.3.3
+#frozenlist==1.3.3
 idna==3.4
 macholib==1.16.2
-multidict==6.0.4
+#multidict==6.1.0
 pycryptodome==3.17
 pyinstaller==5.12.0
 pyinstaller-hooks-contrib==2023.3
@@ -18,3 +18,4 @@ soupsieve==2.4.1
 tk==0.1.0
 urllib3==2.0.2
 yarl==1.9.2
+python-dotenv==1.0.1

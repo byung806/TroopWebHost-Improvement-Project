@@ -1,17 +1,51 @@
-from tkinter import Tk, CENTER, LEFT, RIGHT, TOP, END, WORD, YES, HORIZONTAL, VERTICAL, BOTH, NORMAL, DISABLED, StringVar, PanedWindow, PhotoImage
-from tkinter.ttk import Label, Frame, Button, Style, LabelFrame, Scrollbar, OptionMenu, Separator
-from custom_elements import PlaceholderEntry, SortableTreeview, CheckableSortableTreeview, PlaceholderTextbox
+from tkinter import (
+    Tk,
+    CENTER,
+    LEFT,
+    RIGHT,
+    TOP,
+    END,
+    WORD,
+    YES,
+    HORIZONTAL,
+    VERTICAL,
+    BOTH,
+    NORMAL,
+    DISABLED,
+    StringVar,
+    PanedWindow,
+)
+from tkinter.ttk import (
+    Label,
+    Frame,
+    Button,
+    Style,
+    LabelFrame,
+    Scrollbar,
+    OptionMenu,
+    Separator,
+)
+from custom_elements import (
+    PlaceholderEntry,
+    SortableTreeview,
+    CheckableSortableTreeview,
+    PlaceholderTextbox,
+)
 from get_data import get_logged_in_session, get_data
 from send_email import send_email
 from threading import Thread
-import json, os, sys
+import json
+import os
+import sys
 
 DEBUG = True
 
 
 def get_real_path_for_executable(filename):
-    if DEBUG: return filename
+    if DEBUG:
+        return filename
     return os.path.join(os.path.dirname(sys.executable), filename)
+
 
 # The main window of the application
 class App(Tk):
@@ -22,16 +56,16 @@ class App(Tk):
     def __init__(self, default_width, default_height, *args, **kwargs):
         Tk.__init__(self, *args, **kwargs)
         container = Frame(self)
-        container.pack(side='top', fill='both', expand=True)
-        self.title('Scouting Improvement App')
+        container.pack(side="top", fill="both", expand=True)
+        self.title("Scouting Improvement App")
 
         # Center app when opened
         screen_width = self.winfo_screenwidth()  # Width of the screen
         screen_height = self.winfo_screenheight()
-        x = (screen_width/2) - (default_width/2)
-        y = (screen_height/2) - (default_height/2)
+        x = (screen_width / 2) - (default_width / 2)
+        y = (screen_height / 2) - (default_height / 2)
 
-        self.geometry('1280x720+%d+%d' % (x, y))
+        self.geometry("1280x720+%d+%d" % (x, y))
         self.minsize(1050, 600)
 
         # Focus on every object with mouse click (so entry boxes/textboxes can be deselected)
@@ -42,10 +76,10 @@ class App(Tk):
 
         # A dict of all the screen objects
         self.screens = {}
-        self.screens[App.LOGIN_SCREEN] = LoginScreen(
-            container, controller=self)
+        self.screens[App.LOGIN_SCREEN] = LoginScreen(container, controller=self)
         self.screens[App.DATA_VISUALIZATION_SCREEN] = DataVisualizationScreen(
-            container, controller=self, orient='horizontal')
+            container, controller=self, orient="horizontal"
+        )
 
         # Open login screen first
         self.current_screen = App.LOGIN_SCREEN
@@ -57,7 +91,7 @@ class App(Tk):
         old_screen.grid_forget()
 
         screen = self.screens[name]
-        screen.grid(row=0, column=0, sticky='nsew')
+        screen.grid(row=0, column=0, sticky="nsew")
         screen.tkraise()
         screen.focus()
 
@@ -75,17 +109,23 @@ class LoginScreen(Frame):
         self.controller = controller
 
         # Frame to keep login centered in the screen
-        center_frame = LabelFrame(
-            self, text='Sign in to TroopWebHost', labelanchor='n')
+        center_frame = LabelFrame(self, text="Sign in to TroopWebHost", labelanchor="n")
 
         # Text and entry boxes for login
         # login_label = Label(center_frame, text='Sign In')
-        self.username_entry = PlaceholderEntry(center_frame, placeholder='Username')
+        self.username_entry = PlaceholderEntry(center_frame, placeholder="Username")
         self.password_entry = PlaceholderEntry(
-            center_frame, show='*', placeholder='Password')
+            center_frame, show="*", placeholder="Password"
+        )
         self.error_label = Label(
-            center_frame, text='Incorrect username or password.', style='TLabel')
-        self.login_button = Button(center_frame, text='Login', command=self.authenticate, style='Accent.TButton')
+            center_frame, text="Incorrect username or password.", style="TLabel"
+        )
+        self.login_button = Button(
+            center_frame,
+            text="Login",
+            command=self.authenticate,
+            style="Accent.TButton",
+        )
 
         # Position each element on the screen
         self.username_entry.grid(row=1, column=0, padx=10, pady=10)
@@ -93,7 +133,7 @@ class LoginScreen(Frame):
         self.login_button.grid(row=4, column=0, pady=10)
 
         # Make enter key work to press login button
-        self.password_entry.bind('<Return>', self.authenticate)
+        self.password_entry.bind("<Return>", self.authenticate)
 
         # Place holding frame in the center of the screen
         center_frame.place(relx=0.5, rely=0.5, anchor=CENTER)
@@ -102,9 +142,11 @@ class LoginScreen(Frame):
     def authenticate(self, *_):
         username = self.username_entry.get()
         password = self.password_entry.get()
-        self.login_button.config(style='TButton', command=None)
-        self.login_button['state'] = DISABLED
-        check_login_thread = Thread(target=self.authenticate_with_twh, args=(username, password))
+        self.login_button.config(style="TButton", command=None)
+        self.login_button["state"] = DISABLED
+        check_login_thread = Thread(
+            target=self.authenticate_with_twh, args=(username, password)
+        )
         check_login_thread.start()
 
     # Authenticate by sending login to TroopWebHost, done on another thread
@@ -114,8 +156,8 @@ class LoginScreen(Frame):
             self.password_entry.reset_with_focus()
             self.error_label.grid(row=3, column=0)
             self.error_label.after(3000, lambda *_: self.error_label.grid_forget())
-            self.login_button.config(style='Accent.TButton', command=self.authenticate)
-            self.login_button['state'] = NORMAL
+            self.login_button.config(style="Accent.TButton", command=self.authenticate)
+            self.login_button["state"] = NORMAL
         else:
             self.controller.switch_screen_to(App.DATA_VISUALIZATION_SCREEN)
             thread = Thread(target=self.controller.get_data, args=(session,))
@@ -128,7 +170,7 @@ class DataVisualizationScreen(PanedWindow):
         PanedWindow.__init__(self, parent, *args, **kwargs)
         self.controller = controller
         # Set data to empty until it can be filled with updated data
-        self.data = [['...', '...', '...', '...']]
+        self.data = [["...", "...", "...", "..."]]
         # List of all emails currently in the selected emails list
         self.selected = []
 
@@ -157,13 +199,17 @@ class DataVisualizationScreen(PanedWindow):
 
     def add_selected(self):
         self.data_visualizer_column.chart_treeview.add_selected()
-        self.selected = self.data_visualizer_column.chart_treeview.get_selected_items_email()
+        self.selected = (
+            self.data_visualizer_column.chart_treeview.get_selected_items_email()
+        )
         self.selected_emails_column.update_selected(self.selected)
         self.data_visualizer_column.chart_treeview.color_selected()
 
     def remove_selected(self):
         self.data_visualizer_column.chart_treeview.remove_selected()
-        self.selected = self.data_visualizer_column.chart_treeview.get_selected_items_email()
+        self.selected = (
+            self.data_visualizer_column.chart_treeview.get_selected_items_email()
+        )
         self.selected_emails_column.update_selected(self.selected)
         self.data_visualizer_column.chart_treeview.color_selected()
 
@@ -182,36 +228,52 @@ class DataVisualizerColumn(PanedWindow):
 
         # Top sorting frame
         sorting_frame = Frame(self)
-        self.add_selected_button = Button(sorting_frame, text='Add Selected to Recipients', style='Accent.TButton')
-        self.add_selected_button.pack(padx=8, pady=8, side='left')
-        self.remove_selected_button = Button(sorting_frame, text='Remove Selected from Recipients', style='Accent.TButton')
-        self.remove_selected_button.pack(padx=8, pady=8, side='left')
-        self.loading_label = Label(sorting_frame, text='Fetching data...')
-        self.loading_label.pack(padx=8, pady=8, side='left')
-        self.deselect_all_button = Button(sorting_frame, text='Remove All Recipients', style='TButton')
-        self.deselect_all_button.pack(padx=8, pady=8, side='right')
+        self.add_selected_button = Button(
+            sorting_frame, text="Add Selected to Recipients", style="Accent.TButton"
+        )
+        self.add_selected_button.pack(padx=8, pady=8, side="left")
+        self.remove_selected_button = Button(
+            sorting_frame,
+            text="Remove Selected from Recipients",
+            style="Accent.TButton",
+        )
+        self.remove_selected_button.pack(padx=8, pady=8, side="left")
+        self.loading_label = Label(sorting_frame, text="Fetching data...")
+        self.loading_label.pack(padx=8, pady=8, side="left")
+        self.deselect_all_button = Button(
+            sorting_frame, text="Remove All Recipients", style="TButton"
+        )
+        self.deselect_all_button.pack(padx=8, pady=8, side="right")
         self.add(sorting_frame)
 
         # Bottom chart frame
         chart_frame = Frame(self)
         # Scroll bar for all the data
         chart_tree_scroll = Scrollbar(chart_frame)
-        chart_tree_scroll.pack(side=RIGHT, fill='y')
-        columns = {0: 'Name', 1: 'Training Name', 2: 'Expiry Date', 3: 'Email'}
+        chart_tree_scroll.pack(side=RIGHT, fill="y")
+        columns = {0: "Name", 1: "Training Name", 2: "Expiry Date", 3: "Email"}
         # Chart for all the data
-        self.chart_treeview = CheckableSortableTreeview(chart_frame, selectmode='none', columns=columns,
-                                                        yscrollcommand=chart_tree_scroll.set)
+        self.chart_treeview = CheckableSortableTreeview(
+            chart_frame,
+            selectmode="none",
+            columns=columns,
+            yscrollcommand=chart_tree_scroll.set,
+        )
         chart_tree_scroll.config(command=self.chart_treeview.yview)
         self.update_chart(parent.data)
         self.chart_treeview.column(
-            '0', anchor='w', minwidth=120, width=160, stretch=YES)
+            "0", anchor="w", minwidth=120, width=160, stretch=YES
+        )
         self.chart_treeview.column(
-            '1', anchor="w", minwidth=120, width=160, stretch=YES)
+            "1", anchor="w", minwidth=120, width=160, stretch=YES
+        )
         self.chart_treeview.column(
-            '2', anchor="w", minwidth=120, width=160, stretch=YES)
+            "2", anchor="w", minwidth=120, width=160, stretch=YES
+        )
         self.chart_treeview.column(
-            '3', anchor="w", minwidth=120, width=160, stretch=YES)
-        self.chart_treeview.pack(expand=True, fill='both')
+            "3", anchor="w", minwidth=120, width=160, stretch=YES
+        )
+        self.chart_treeview.pack(expand=True, fill="both")
         self.add(chart_frame)
 
     # Update chart once self.data is updated
@@ -220,18 +282,21 @@ class DataVisualizerColumn(PanedWindow):
             self.chart_treeview.delete(row)
         # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
         for row in data:
-            self.chart_treeview.insert(
-                '', END, values=row, tags=('unchecked',))
-            
+            self.chart_treeview.insert("", END, values=row, tags=("unchecked",))
+
     # Enable selection of chart
     def enable_chart_selection(self):
-        self.chart_treeview.config(selectmode='extended')
-    
+        self.chart_treeview.config(selectmode="extended")
+
     # Enable initially disabled buttons (when data is being scraped)
     def enable_buttons(self):
         self.add_selected_button.config(command=lambda: self.parent.add_selected())
-        self.remove_selected_button.config(command=lambda: self.parent.remove_selected())
-        self.deselect_all_button.config(command=lambda: self.parent.remove_all_selected())
+        self.remove_selected_button.config(
+            command=lambda: self.parent.remove_selected()
+        )
+        self.deselect_all_button.config(
+            command=lambda: self.parent.remove_all_selected()
+        )
 
 
 # Middle selected emails column
@@ -241,15 +306,18 @@ class SelectedEmailsColumn(Frame):
 
         # Scroll bar for the selected list
         selected_tree_scroll = Scrollbar(self)
-        selected_tree_scroll.pack(side=RIGHT, fill='y')
+        selected_tree_scroll.pack(side=RIGHT, fill="y")
         # Chart for the selected people
-        self.selected_treeview = SortableTreeview(self, selectmode='none', columns={0: 'Email Recipients'},
-                                                  yscrollcommand=selected_tree_scroll.set)
+        self.selected_treeview = SortableTreeview(
+            self,
+            selectmode="none",
+            columns={0: "Email Recipients"},
+            yscrollcommand=selected_tree_scroll.set,
+        )
         # selected_treeview.tag_configure('checked', background='#a0f79c')
         selected_tree_scroll.config(command=self.selected_treeview.yview)
-        self.selected_treeview.column(
-            '0', anchor='center', minwidth=100, width=120)
-        self.selected_treeview.pack(expand=True, fill='both')
+        self.selected_treeview.column("0", anchor="center", minwidth=100, width=120)
+        self.selected_treeview.pack(expand=True, fill="both")
 
     # Update selected chart after select or deselect
     def update_selected(self, data):
@@ -257,8 +325,7 @@ class SelectedEmailsColumn(Frame):
             self.selected_treeview.delete(item)
         # Adding each row in the test data to the chart ('' and END just refer to the whole chart)
         for row in data:
-            self.selected_treeview.insert(
-                '', END, values=row, tags=('unchecked',))
+            self.selected_treeview.insert("", END, values=row, tags=("unchecked",))
 
 
 # Rightmost email template frame
@@ -271,43 +338,78 @@ class EmailTemplateColumn(Frame):
 
         # Top error message / success message
         self.top_label = Label(self)
-        self.top_label.bind('<Configure>', lambda _: self.top_label.config(wraplength=self.top_label.winfo_width()))
+        self.top_label.bind(
+            "<Configure>",
+            lambda _: self.top_label.config(wraplength=self.top_label.winfo_width()),
+        )
 
         # Login frame
         self.login_to_email_frame = Frame(self)
-        self.email_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='Sender Email')
+        self.email_to_use = PlaceholderEntry(
+            self.login_to_email_frame, placeholder="Sender Email"
+        )
         self.email_to_use.pack(padx=8, pady=8, side=LEFT, expand=True)
-        self.passw_to_use = PlaceholderEntry(self.login_to_email_frame, placeholder='App Password', show='*')
+        self.passw_to_use = PlaceholderEntry(
+            self.login_to_email_frame, placeholder="App Password", show="*"
+        )
         self.passw_to_use.pack(padx=8, pady=8, side=RIGHT, expand=True)
-        self.login_to_email_frame.pack(side=TOP, fill='x')
+        self.login_to_email_frame.pack(side=TOP, fill="x")
 
         # Separator
         self.separator = Separator(self, orient=HORIZONTAL)
-        self.separator.pack(fill='x', pady=8)
+        self.separator.pack(fill="x", pady=8)
 
         # Template selection frame
-        self.template_selection_frame = LabelFrame(self, text='Load from Template')
-        self.template_selection_frame.pack(padx=8, pady=8, side=TOP, fill='x')
+        self.template_selection_frame = LabelFrame(self, text="Load from Template")
+        self.template_selection_frame.pack(padx=8, pady=8, side=TOP, fill="x")
 
         # Label about editing loaded template
-        self.disclaimer_label = Label(self.template_selection_frame, text='Editing the subject or message loaded from a template will not change the template.')
-        self.disclaimer_label.bind('<Configure>', lambda _: self.disclaimer_label.config(wraplength=self.disclaimer_label.winfo_width()))
-        self.disclaimer_label.pack(padx=8, pady=8, side=TOP, fill='x')
+        self.disclaimer_label = Label(
+            self.template_selection_frame,
+            text="Editing the subject or message loaded from a template will not change the template.",
+        )
+        self.disclaimer_label.bind(
+            "<Configure>",
+            lambda _: self.disclaimer_label.config(
+                wraplength=self.disclaimer_label.winfo_width()
+            ),
+        )
+        self.disclaimer_label.pack(padx=8, pady=8, side=TOP, fill="x")
 
         # Template dropdown
-        self.select_template_dropdown = OptionMenu(self.template_selection_frame, '')
-        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x')
+        self.select_template_dropdown = OptionMenu(self.template_selection_frame, "")
+        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill="x")
 
         # Subject & send email frame
         self.subject_send_email_frame = Frame(self)
-        self.email_send_button = Button(self.subject_send_email_frame, text='Send Email', style='Accent.TButton', command=self.send_email)
+        self.email_send_button = Button(
+            self.subject_send_email_frame,
+            text="Send Email",
+            style="Accent.TButton",
+            command=self.send_email,
+        )
         self.email_send_button.pack(padx=8, pady=8, side=RIGHT)
-        self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
-        self.subject_entry.pack(padx=8, pady=8, side=LEFT, expand=True, fill='x', before=self.email_send_button)
-        self.subject_send_email_frame.pack(side=TOP, fill='x')
+        self.subject_entry = PlaceholderEntry(
+            self.subject_send_email_frame, placeholder="Subject"
+        )
+        self.subject_entry.pack(
+            padx=8,
+            pady=8,
+            side=LEFT,
+            expand=True,
+            fill="x",
+            before=self.email_send_button,
+        )
+        self.subject_send_email_frame.pack(side=TOP, fill="x")
 
         # Email body
-        self.template_text_box = PlaceholderTextbox(self, placeholder='Type your message here...', wrap=WORD, width=50, borderwidth=5)
+        self.template_text_box = PlaceholderTextbox(
+            self,
+            placeholder="Type your message here...",
+            wrap=WORD,
+            width=50,
+            borderwidth=5,
+        )
         self.template_text_box.pack(padx=8, pady=8, side=TOP, expand=True, fill=BOTH)
 
         # Fill in template dropdown & text box from json
@@ -320,11 +422,14 @@ class EmailTemplateColumn(Frame):
         subject = self.subject_entry.get()
         body = self.template_text_box.get()
 
-        self.email_send_button.config(style='TButton', command=None, text='Sending...')
-        self.email_send_button['state'] = DISABLED
-        
+        self.email_send_button.config(style="TButton", command=None, text="Sending...")
+        self.email_send_button["state"] = DISABLED
+
         # Try to send email
-        email_thread = Thread(target=self.send_email_thread, args=(email, password, recipients, subject, body))
+        email_thread = Thread(
+            target=self.send_email_thread,
+            args=(email, password, recipients, subject, body),
+        )
         email_thread.start()
 
     def send_email_thread(self, email, password, recipients, subject, body):
@@ -336,63 +441,79 @@ class EmailTemplateColumn(Frame):
             self.passw_to_use.reset_with_focus()
 
         # Make label appear
-        self.top_label.pack(padx=8, pady=8, side=TOP, before=self.login_to_email_frame, fill='x')
+        self.top_label.pack(
+            padx=8, pady=8, side=TOP, before=self.login_to_email_frame, fill="x"
+        )
         # Make label disappear after 5 seconds
         self.top_label.after(20000, lambda *_: self.top_label.pack_forget())
 
-        self.email_send_button.config(style='Accent.TButton', command=None, text='Send Email')
-        self.email_send_button['state'] = NORMAL
+        self.email_send_button.config(
+            style="Accent.TButton", command=None, text="Send Email"
+        )
+        self.email_send_button["state"] = NORMAL
 
     # Called when user changes to a different template (new_template is name of template)
     def on_template_change(self, new_template):
         template_dict = self.templates[new_template]
 
-        subject = template_dict['subject']
+        subject = template_dict["subject"]
         self.subject_entry.clear_placeholder()
         self.subject_entry.insert(0, subject)
-        if subject == '':
+        if subject == "":
             self.subject_entry.reset_without_focus()
 
-        body = template_dict['body']
+        body = template_dict["body"]
         self.template_text_box.clear_placeholder()
-        self.template_text_box.insert('1.0', body)
-        if body == '':
+        self.template_text_box.insert("1.0", body)
+        if body == "":
             self.template_text_box.reset_without_focus()
 
     # Read from json, then update templates dropdown and textbox
     def update_templates_from_json(self):
         self.templates = self.read_templates_from_json()
 
-
         options = list(self.templates.keys())
         # Required empty first option for an OptionMenu
-        options.insert(0, '')
+        options.insert(0, "")
 
         self.select_template_dropdown.pack_forget()
-        self.select_template_dropdown = OptionMenu(self, StringVar(value=options[1]), *options, command=self.on_template_change)
-        self.select_template_dropdown.pack(padx=8, pady=8, side=TOP, fill='x', after=self.disclaimer_label)
+        self.select_template_dropdown = OptionMenu(
+            self, StringVar(value=options[1]), *options, command=self.on_template_change
+        )
+        self.select_template_dropdown.pack(
+            padx=8, pady=8, side=TOP, fill="x", after=self.disclaimer_label
+        )
 
         self.subject_entry.pack_forget()
-        self.subject_entry = PlaceholderEntry(self.subject_send_email_frame, placeholder='Subject')
-        self.subject_entry.pack(padx=8, pady=8, side=LEFT, expand=True, fill='x', before=self.email_send_button)
+        self.subject_entry = PlaceholderEntry(
+            self.subject_send_email_frame, placeholder="Subject"
+        )
+        self.subject_entry.pack(
+            padx=8,
+            pady=8,
+            side=LEFT,
+            expand=True,
+            fill="x",
+            before=self.email_send_button,
+        )
 
         self.on_template_change(options[1])
 
     # Read templates from json file
     def read_templates_from_json(self):
-        return json.load(open(get_real_path_for_executable('templates.json'), 'r'))
+        return json.load(open(get_real_path_for_executable("templates.json"), "r"))
 
     # Save templates to json file
     def save_templates_to_json(self):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Start app and start main loop
     app = App(1280, 720)
-    app.tk.call('source', get_real_path_for_executable('forest-light.tcl'))
+    app.tk.call("source", get_real_path_for_executable("forest-light.tcl"))
 
     s = Style()
-    s.theme_use('forest-light')
+    s.theme_use("forest-light")
 
     app.mainloop()
