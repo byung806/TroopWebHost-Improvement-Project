@@ -32,3 +32,5 @@ test.py
 build/
 dist/
 *.spec
+
+.env

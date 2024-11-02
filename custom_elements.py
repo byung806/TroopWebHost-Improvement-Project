@@ -5,15 +5,25 @@ from datetime import datetime
 
 # Custom class to create entry boxes with a placeholder
 class PlaceholderEntry(Entry):
-    def __init__(self, master=None, show='', placeholder='', fg='black', placeholder_color='grey50', style='', *args, **kwargs):
+    def __init__(
+        self,
+        master=None,
+        show="",
+        placeholder="",
+        fg="black",
+        placeholder_color="grey50",
+        style="",
+        *args,
+        **kwargs
+    ):
         super().__init__(master, show=show, style=style, *args, **kwargs)
         self.placeholder = placeholder
         self.fg = fg
         self.placeholder_color = placeholder_color
         self.has_content = False
         self.show_original = show
-        self.bind('<FocusIn>', self._clear_placeholder)
-        self.bind('<FocusOut>', self._fill_placeholder)
+        self.bind("<FocusIn>", self._clear_placeholder)
+        self.bind("<FocusOut>", self._fill_placeholder)
         self._fill_placeholder()
 
     # Resets entry box after a bad password (clears text and sets focus)
@@ -42,10 +52,10 @@ class PlaceholderEntry(Entry):
 
     # Fills placeholder text in entry, called when user clicks out of entry & box is empty
     def _fill_placeholder(self, *_):
-        if super().get() == '':
+        if super().get() == "":
             self.insert(0, self.placeholder)
             self.config(foreground=self.placeholder_color)
-            self.config(show='')
+            self.config(show="")
             self.has_content = False
 
     # Override original get function to return '' when there's a placeholder
@@ -53,29 +63,37 @@ class PlaceholderEntry(Entry):
         content = super().get()
         if self.has_content:
             return content
-        return ''
-    
+        return ""
+
 
 class PlaceholderTextbox(Text):
-    def __init__(self, master=None, placeholder='', fg='black', placeholder_color='grey50', *args, **kwargs):
+    def __init__(
+        self,
+        master=None,
+        placeholder="",
+        fg="black",
+        placeholder_color="grey50",
+        *args,
+        **kwargs
+    ):
         super().__init__(master, *args, **kwargs)
         self.placeholder = placeholder
         self.fg = fg
         self.placeholder_color = placeholder_color
         self.has_content = False
-        self.bind('<FocusIn>', self._clear_placeholder)
-        self.bind('<FocusOut>', self._fill_placeholder)
+        self.bind("<FocusIn>", self._clear_placeholder)
+        self.bind("<FocusOut>", self._fill_placeholder)
         self._fill_placeholder()
 
     # Resets entry box after a bad password (clears text and sets focus)
     def reset_with_focus(self, *_):
-        self.delete('1.0', END+'-1c')
+        self.delete("1.0", END + "-1c")
         self.has_content = True
         self.focus_set()
 
     # Resets entry box (clears text, adds placeholder, doesn't set focus)
     def reset_without_focus(self, *_):
-        self.delete('1.0', END+'-1c')
+        self.delete("1.0", END + "-1c")
         self._fill_placeholder()
 
     # Clears placeholder text in entry, called when user clicks into entry box
@@ -83,7 +101,7 @@ class PlaceholderTextbox(Text):
         if not self.has_content:
             self.has_content = True
             self.config(foreground=self.fg)
-            self.delete('1.0', END+'-1c')
+            self.delete("1.0", END + "-1c")
 
     # Clears placeholder text in entry (doesn't set placeholder and doesn't set focus)
     def clear_placeholder(self):
@@ -92,55 +110,71 @@ class PlaceholderTextbox(Text):
 
     # Fills placeholder text in entry, called when user clicks out of entry & box is empty
     def _fill_placeholder(self, *_):
-        if super().get('1.0', END+'-1c') == '':
-            self.insert('1.0', self.placeholder)
+        if super().get("1.0", END + "-1c") == "":
+            self.insert("1.0", self.placeholder)
             self.config(foreground=self.placeholder_color)
             self.has_content = False
 
     # Override original get function to return '' when there's a placeholder
     def get(self):
-        content = super().get('1.0', END+'-1c')
+        content = super().get("1.0", END + "-1c")
         if self.has_content:
             return content
-        return ''
+        return ""
 
 
 # Custom class to create a sortable chart
 class SortableTreeview(Treeview):
-    def __init__(self, master=None, columns={}, show='headings', *args, **kwargs):
+    def __init__(self, master=None, columns={}, show="headings", *args, **kwargs):
         super().__init__(master, columns=columns.keys(), *args, **kwargs)
         self.col_names = columns
-        self['show'] = show
+        self["show"] = show
         # Sort by increasing order on first click
         for col in columns:
-            self.heading(col, text=self.col_names[col], command=lambda col_copy=col: self.sort_by(
-                col_copy, reverse=False), anchor='center')
+            self.heading(
+                col,
+                text=self.col_names[col],
+                command=lambda col_copy=col: self.sort_by(col_copy, reverse=False),
+                anchor="center",
+            )
 
     # Sort chart by a specific column
     def sort_by(self, col, reverse=False):
         # Get and sort specific column, keeping track of which row each item was originally in
         column = [(iid, self.set(iid, col)) for iid in self.get_children()]
-        def normal_key(x): return x[1].lower()
+
+        def normal_key(x):
+            return x[1].lower()
+
         if reverse:
             # Sort by date (latest to earliest), setting people without a date to a date far in the past so they show up at the bottom
-            def dates_key(d): return datetime.strptime(
-                '12/22/1900' if not d[1] else d[1], r'%m/%d/%Y')
+            def dates_key(d):
+                return datetime.strptime(
+                    "12/22/1900" if not d[1] else d[1], r"%m/%d/%Y"
+                )
+
         else:
             # Sort by date (earliest to latest), setting people without a date to a date far in the future
-            def dates_key(d): return datetime.strptime(
-                '12/22/2050' if not d[1] else d[1], r'%m/%d/%Y')
-        column_is_date = self.col_names[col] == 'Expiry Date'
+            def dates_key(d):
+                return datetime.strptime(
+                    "12/22/2050" if not d[1] else d[1], r"%m/%d/%Y"
+                )
+
+        column_is_date = self.col_names[col] == "Expiry Date"
         # Sort by normal key if column is not a date, else sort by the date key
-        column.sort(reverse=reverse,
-                    key=dates_key if column_is_date else normal_key)
+        column.sort(reverse=reverse, key=dates_key if column_is_date else normal_key)
 
         # Rearrange original rows in the chart based on sort
         for i, (iid, value) in enumerate(column):
-            self.move(iid, parent='', index=i)
+            self.move(iid, parent="", index=i)
 
         # Set sort command to sort other way on next click
-        self.heading(col, text=self.col_names[col], command=lambda col_copy=col: self.sort_by(
-            col_copy, not reverse), anchor='center')
+        self.heading(
+            col,
+            text=self.col_names[col],
+            command=lambda col_copy=col: self.sort_by(col_copy, not reverse),
+            anchor="center",
+        )
 
 
 # Custom class to create checkable rows in a Treeview
@@ -149,8 +183,8 @@ class CheckableSortableTreeview(SortableTreeview):
         super().__init__(master, *args, **kwargs)
         self.selected = set()
 
-        self.tag_configure('checked', background='#a0f79c')
-        self.tag_configure('unchecked', background='#eeeeee')
+        self.tag_configure("checked", background="#a0f79c")
+        self.tag_configure("unchecked", background="#eeeeee")
 
     # Uncheck row with item
     def check_row(self, item):
@@ -171,7 +205,7 @@ class CheckableSortableTreeview(SortableTreeview):
         emails = []
         for item in selected_items:
             # Get email
-            email = self.item(item)['values'][3]
+            email = self.item(item)["values"][3]
             emails.append(email)
         return list(set(emails))
 

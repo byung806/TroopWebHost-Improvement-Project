@@ -31,6 +31,8 @@ The application is also fully threaded with UI/scraping/loading so it stays resp
 
 Clone the project, and build with pyinstaller.
 
+Copy the env.example file to .env and put your own values in for things like username, password, smtp server. You can also set values in the environment. Obtain your troop ID by examining the source of the page when you are on a login screen.
+
 ## License
 
 This project uses MIT license. Check details in `LICENSE`.
